@@ -43,3 +43,13 @@ export class ItemTagNotFound extends GraaspItemTagsError {
     super({ code: 'GITERR005', statusCode: 404, message: 'Item tag not found' }, data);
   }
 }
+export class TagNotFound extends GraaspItemTagsError {
+  constructor(data?: unknown) {
+    super({ code: 'GITERR006', statusCode: 404, message: 'Tag not found' }, data);
+  }
+}
+export class TagFoundLowerInTheHierarchy extends GraaspItemTagsError {
+  constructor(data?: unknown) {
+    super({ code: 'GITERR007', statusCode: 404, message: 'Tag is already present lower down in the hierarchy.' }, data);
+  }
+}

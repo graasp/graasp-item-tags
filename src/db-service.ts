@@ -4,7 +4,11 @@ import { sql, DatabaseTransactionConnectionType as TrxHandler } from 'slonik';
 import { Item } from 'graasp';
 // local
 import { ItemTag } from './interfaces/item-tag';
+import { Tag } from './interfaces/tag';
 
+/**
+ * Database's first layer of abstraction for Item Tags and (exceptionally) for Tags
+ */
 export class ItemTagService {
   // the 'safe' way to dynamically generate the columns names:
   private static allColumns = sql.join(
@@ -23,7 +27,7 @@ export class ItemTagService {
   );
 
   /**
-   * Get all tags, local or inherited, for the given `item`.
+   * Get all item tags, local or inherited, for the given `item`.
    * @param item Item
    * @param transactionHandler Database transaction handler
    */
@@ -82,7 +86,23 @@ export class ItemTagService {
   }
 
   /**
-   * Get tag "below" the given `item`'s path
+   * Delete ItemTag if at given item (matching item's path).
+   * @param id ItemTag id
+   * @param item Item
+   * @param transactionHandler Database transaction handler
+   */
+  async deleteAtItem(id: string, item: Item, transactionHandler: TrxHandler): Promise<ItemTag> {
+    return transactionHandler.query<ItemTag>(sql`
+        DELETE FROM item_tag
+        WHERE id = ${id}
+          AND item_path = ${item.path}
+        RETURNING ${ItemTagService.allColumns}
+      `)
+      .then(({ rows }) => rows[0] || null);
+  }
+
+  /**
+   * Get item tags "below" the given `item`'s path
    * longest to shortest path - lowest in the (sub)tree to highest in the (sub)tree.
    * @param item Item whose path should be considered
    * @param tagId Tag id
@@ -99,5 +119,33 @@ export class ItemTagService {
       `)
       // TODO: is there a better way?
       .then(({ rows }) => rows.slice(0));
+  }
+
+  // Tags
+  private static allColumnsTags = sql.join(
+    [
+      'id',
+      'name',
+      'nested',
+      ['created_at', 'createdAt'],
+    ].map(c =>
+      !Array.isArray(c) ?
+        sql.identifier([c]) :
+        sql.join(c.map(cwa => sql.identifier([cwa])), sql` AS `)
+    ),
+    sql`, `
+  );
+
+  /**
+   * Get tag.
+   * @param id Tag id
+   * @param transactionHandler Database transaction handler
+   */
+  async getTag(tagId: string, transactionHandler: TrxHandler): Promise<Tag> {
+    return transactionHandler.query<Tag>(sql`
+        SELECT ${ItemTagService.allColumnsTags} FROM tag
+        WHERE id = ${tagId}
+      `)
+      .then(({ rows }) => rows[0] || null);
   }
 }

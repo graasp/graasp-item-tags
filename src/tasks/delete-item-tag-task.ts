@@ -50,7 +50,7 @@ export class DeleteItemTagTask extends BaseItemTagTask {
     if (!hasRights) this.failWith(new UserCannotAdminItem(this.targetId));
 
     // delete tag
-    const itemTag = await this.itemTagService.delete(this.targetId, handler);
+    const itemTag = await this.itemTagService.deleteAtItem(this.targetId, item, handler);
 
     if (!itemTag) this.failWith(new ItemTagNotFound(this.targetId));
 

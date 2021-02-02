@@ -3,7 +3,7 @@ import { DatabaseTransactionHandler } from 'graasp';
 // other services
 import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
-import { ItemNotFound, UserCannotAdminItem, ItemHasTag } from '../util/graasp-item-tags-error';
+import { ItemNotFound, UserCannotAdminItem, ItemHasTag, TagNotFound, TagFoundLowerInTheHierarchy } from '../util/graasp-item-tags-error';
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
 import { BaseItemTag } from '../base-item-tag';
@@ -56,6 +56,9 @@ export class CreateItemTagTask extends BaseItemTagTask {
     if (!hasRights) this.failWith(new UserCannotAdminItem(this.targetId));
 
     const tagId = this.data.tagId;
+    // check if tag exists
+    const tag = await this.itemTagService.getTag(tagId, handler);
+    if (!tag) this.failWith(new TagNotFound(tagId));
 
     // check if item already has tag (local or inherited)
     const hasTag = await this.itemTagService.hasTag(item, tagId, handler);
@@ -67,14 +70,8 @@ export class CreateItemTagTask extends BaseItemTagTask {
     // check tag existence lower in the tree
     const itemTagsBelow = await this.itemTagService.getAllBelow(item, tagId, handler);
     if (itemTagsBelow.length > 0) {
-      /**
-       * Two options here:
-       * - fail because there's the same tag already below this item, or
-       * - clean tags below this item before creating the tag on the item
-       *
-       * TODO: decide which is the default behavior (maybe the second), and
-       * build a way of defining this option for tags.
-       */
+      // check tag's "nesting" rule
+      if (tag.nested === 'fail') this.failWith(new TagFoundLowerInTheHierarchy(tagId));
 
       // clean items below
       // return subtasks to remove redundant existing tags and to create the new one
