@@ -18,21 +18,21 @@ export class GetItemsItemTagsTask extends BaseItemTagTask {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this._status = 'RUNNING';
+    this.status = 'RUNNING';
 
     // get item for which we're fetching its tags
     const item = await this.itemService.get(this.targetId, handler);
-    if (!item) this.failWith(new ItemNotFound(this.targetId));
+    if (!item) throw new ItemNotFound(this.targetId);
 
     // verify if member getting the tags has rights for that
     const hasRights = await this.itemMembershipService.canRead(this.actor, item, handler);
-    if (!hasRights) this.failWith(new UserCannotReadItem(this.targetId));
+    if (!hasRights) throw new UserCannotReadItem(this.targetId);
 
     // get tags
     const itemTags = await this.itemTagService.getAll(item, handler);
 
     // return item tags
     this._result = itemTags;
-    this._status = 'OK';
+    this.status = 'OK';
   }
 }

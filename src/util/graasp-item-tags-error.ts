@@ -35,7 +35,7 @@ export class UserCannotAdminItem extends GraaspItemTagsError {
 }
 export class ItemHasTag extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR004', statusCode: 400, message: 'Item already has tag (own or inherited)' }, data);
+    super({ code: 'GITERR004', statusCode: 400, message: 'Item already has tag' }, data);
   }
 }
 export class ItemTagNotFound extends GraaspItemTagsError {
@@ -48,8 +48,8 @@ export class TagNotFound extends GraaspItemTagsError {
     super({ code: 'GITERR006', statusCode: 404, message: 'Tag not found' }, data);
   }
 }
-export class TagFoundLowerInTheHierarchy extends GraaspItemTagsError {
+export class ConflictingTagsInTheHierarchy extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR007', statusCode: 404, message: 'Tag is already present lower down in the hierarchy.' }, data);
+    super({ code: 'GITERR007', statusCode: 403, message: 'Tag already present in the hierarchy - ancestors or descendants' }, data);
   }
 }

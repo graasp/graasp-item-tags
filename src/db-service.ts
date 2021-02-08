@@ -42,18 +42,18 @@ export class ItemTagService {
   }
 
   /**
-   * Check if item has tag (local or inherited).
+   * Check if item has (local) tag.
    * @param item Item
    * @param tagId Tag id
    * @param transactionHandler Database transaction handler
    */
   async hasTag(item: Item, tagId: string, transactionHandler: TrxHandler): Promise<boolean> {
     return transactionHandler
-      .oneFirst(sql`
+      .oneFirst<string>(sql`
         SELECT count(*) FROM item_tag
-        WHERE tag_id = ${tagId} AND item_path @> ${item.path}
+        WHERE tag_id = ${tagId} AND item_path = ${item.path}
       `)
-      .then((count: string) => parseInt(count, 10) > 0);
+      .then(count => parseInt(count, 10) === 1);
   }
 
   /**
@@ -120,6 +120,61 @@ export class ItemTagService {
       // TODO: is there a better way?
       .then(({ rows }) => rows.slice(0));
   }
+
+  /**
+   * Checks for the existence of same tags with "nesting" rule 'fail' at
+   * `path1` (and descendants) and `path2` (and ancestors).
+   * @param itemPath1 Item path 1
+   * @param itemPath2 Item path 2
+   * @param transactionHandler Database transaction handler
+   */
+  async haveConflictingTags(itemPath1: string, itemPath2: string, transactionHandler: TrxHandler): Promise<boolean> {
+    return transactionHandler
+      .query<{ tagId: string, total: number }>(sql`
+        SELECT tag_id AS "tagId", count(*) AS "total"
+        FROM item_tag
+        WHERE (${itemPath1} @> item_path -- get all below, or at, item1
+          OR item_path @> ${itemPath2}) -- get all above, or at, item2
+          AND tag_id IN (SELECT id FROM tag WHERE nested = 'fail')
+        GROUP BY tag_id
+      `)
+      .then(({ rows }) => rows.some(({ total }) => total > 1));
+  }
+
+  /**
+   * Copy tags from one item to another
+   * @param from Item
+   * @param to Item
+   * @param creatorId Creator id
+   * @param transactionHandler Database transaction handler
+   */
+  async copyTags(from: Item, to: Item, creatorId: string, transactionHandler: TrxHandler): Promise<readonly ItemTag[]> {
+    return transactionHandler
+      .query<ItemTag>(sql`
+        INSERT INTO item_tag (tag_id, item_path, creator)
+        SELECT tag_id, ${to.path}, ${creatorId}
+        FROM item_tag
+        WHERE item_path = ${from.path}
+      `)
+      .then(({ rows }) => rows);
+  }
+
+  // TODO: this was to clean duplicate/nested tags.
+  // async removeRedundantTagsBelowItem(item: Item, transactionHandler: TrxHandler): Promise<void> {
+  //   await transactionHandler
+  //     .query(sql`
+  //       WITH tags_count AS (
+  //         SELECT tag_id, count(*) as "total"
+  //         FROM item_tag
+  //         WHERE ${item.path} @> item_path -- get all below, or at, item
+  //           OR item_path @> ${item.path} -- get all above, or at, item
+  //         GROUP BY tag_id
+  //       )
+  //       DELETE FROM item_tag
+  //       WHERE ${item.path} @> item_path
+  //         AND tag_id IN (SELECT tag_id FROM tags_count WHERE total > 1)
+  //     `);
+  // }
 
   // Tags
   private static allColumnsTags = sql.join(

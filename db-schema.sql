@@ -5,7 +5,7 @@ CREATE TABLE "tag" (
   -- 'name' might not be the final label for the user but a (recognizable) short english label that behaves as a key for translation
   "name" character varying(100) NOT NULL,
   -- "creator" uuid REFERENCES "member" ("id") ON DELETE SET NULL, -- don't remove - set creator to NULL
-  "nested" nested_enum DEFAULT 'clean' NOT NULL,
+  "nested" nested_enum DEFAULT NULL,
   "created_at" timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc')
 );
 
