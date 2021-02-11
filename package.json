@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "",
   "main": "dist/service-api.js",
-  "types": "dist/service-api.ts",
+  "types": "types/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc --project tsconfig.declaration.json --declaration --declarationDir ./types",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "npm run build"
   },
@@ -20,7 +20,9 @@
     "url": "https://github.com/graasp/graasp-item-tags/issues"
   },
   "homepage": "https://github.com/graasp/graasp-item-tags#readme",
-  "dependencies": {},
+  "dependencies": {
+    "fastify-plugin": "^3.0.0"
+  },
   "devDependencies": {
     "@types/eslint": "^7.2.5",
     "@types/graasp": "github:graasp/graasp-types.git#master",
