@@ -102,18 +102,18 @@ export class ItemTagService {
   }
 
   /**
-   * Get item tags "below" the given `item`'s path
-   * longest to shortest path - lowest in the (sub)tree to highest in the (sub)tree.
+   * Get item tags, w/ `tagId`, "below" or "above" the given `item`, ordered by
+   * longest to shortest path - lowest in the tree to highest in the tree.
    * @param item Item whose path should be considered
    * @param tagId Tag id
    * @param transactionHandler Database transaction handler
    */
-  async getAllBelow(item: Item, tagId: string, transactionHandler: TrxHandler): Promise<ItemTag[]> {
+  async getAllBelowOrAbove(item: Item, tagId: string, transactionHandler: TrxHandler): Promise<ItemTag[]> {
     return transactionHandler.query<ItemTag>(sql`
         SELECT ${ItemTagService.allColumns}
         FROM item_tag
         WHERE tag_id = ${tagId}
-          AND ${item.path} @> item_path
+          AND (${item.path} @> item_path OR item_path @> ${item.path})
           AND item_path != ${item.path}
         ORDER BY nlevel(item_path) DESC
       `)
