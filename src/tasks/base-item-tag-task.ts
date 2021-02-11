@@ -1,5 +1,6 @@
 // global
-import { DatabaseTransactionHandler } from 'graasp';
+import { FastifyLoggerInstance } from 'fastify';
+import { DatabaseTransactionHandler, PostHookHandlerType, PreHookHandlerType } from 'graasp';
 import { Task, TaskStatus } from 'graasp';
 // other services
 import { Member, ItemService, ItemMembershipService } from 'graasp';
@@ -19,6 +20,8 @@ export abstract class BaseItemTagTask implements Task<Member, ItemTag> {
   status: TaskStatus;
   targetId: string;
   data: Partial<ItemTag>;
+  preHookHandler: PreHookHandlerType<ItemTag>;
+  postHookHandler: PostHookHandlerType<ItemTag>;
 
   constructor(actor: Member,
     itemService: ItemService, itemMembershipService: ItemMembershipService,
@@ -34,5 +37,5 @@ export abstract class BaseItemTagTask implements Task<Member, ItemTag> {
   get result(): ItemTag | ItemTag[] { return this._result; }
   get message(): string { return this._message; }
 
-  abstract run(handler: DatabaseTransactionHandler): Promise<void | BaseItemTagTask[]>;
+  abstract run(handler: DatabaseTransactionHandler, log?: FastifyLoggerInstance): Promise<void | BaseItemTagTask[]>;
 }
