@@ -1,27 +1,28 @@
 // global
 import { FastifyLoggerInstance } from 'fastify';
-import { DatabaseTransactionHandler, PostHookHandlerType, PreHookHandlerType } from 'graasp';
-import { Task, TaskStatus } from 'graasp';
+import {
+  Actor, DatabaseTransactionHandler, IndividualResultType,
+  PostHookHandlerType, PreHookHandlerType, Task, TaskStatus
+} from 'graasp';
 // other services
 import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
-import { ItemTag } from '../interfaces/item-tag';
 import { ItemTagService } from '../db-service';
 
-export abstract class BaseItemTagTask implements Task<Member, ItemTag> {
+export abstract class BaseItemTagTask<R> implements Task<Actor, R> {
   protected itemService: ItemService;
   protected itemMembershipService: ItemMembershipService;
   protected itemTagService: ItemTagService;
-  protected _result: ItemTag | ItemTag[];
+  protected _result: R;
   protected _message: string;
 
   readonly actor: Member;
 
   status: TaskStatus;
   targetId: string;
-  data: Partial<ItemTag>;
-  preHookHandler: PreHookHandlerType<ItemTag>;
-  postHookHandler: PostHookHandlerType<ItemTag>;
+  data: Partial<IndividualResultType<R>>;
+  preHookHandler: PreHookHandlerType<R>;
+  postHookHandler: PostHookHandlerType<R>;
 
   constructor(actor: Member,
     itemService: ItemService, itemMembershipService: ItemMembershipService,
@@ -34,8 +35,8 @@ export abstract class BaseItemTagTask implements Task<Member, ItemTag> {
   }
 
   abstract get name(): string;
-  get result(): ItemTag | ItemTag[] { return this._result; }
+  get result(): R { return this._result; }
   get message(): string { return this._message; }
 
-  abstract run(handler: DatabaseTransactionHandler, log?: FastifyLoggerInstance): Promise<void | BaseItemTagTask[]>;
+  abstract run(handler: DatabaseTransactionHandler, log?: FastifyLoggerInstance): Promise<void | BaseItemTagTask<R>[]>;
 }

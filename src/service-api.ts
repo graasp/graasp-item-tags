@@ -3,7 +3,7 @@ import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 import {
-  IdParam, Item, ItemCopyHookHandlerExtraData, ItemCustomTaskManager,
+  IdParam, Item, ItemCopyHookHandlerExtraData,
   ItemMoveHookHandlerExtraData,
   PostHookHandlerType,
   PreHookHandlerType
@@ -15,20 +15,19 @@ import common, {
   deleteOne
 } from './schemas';
 import { ItemTagService } from './db-service';
-import { ItemTagTaskManager } from './task-manager';
 import { ItemTag } from './interfaces/item-tag';
 import { ConflictingTagsInTheHierarchy } from './util/graasp-item-tags-error';
+import { TaskManager } from './task-manager';
 
-interface GraaspItemTagsOptions {
-  itemTaskManager: ItemCustomTaskManager
-}
-
-const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, options) => {
-  const { itemService: iS, itemMembershipService: iMS, taskRunner: runner } = fastify;
-  const { itemTaskManager } = options;
+const plugin: FastifyPluginAsync = async (fastify) => {
+  const {
+    items: { dbService: iS, taskManager: itemTaskManager },
+    itemMemberships: { dbService: iMS },
+    taskRunner: runner
+  } = fastify;
 
   const iTS = new ItemTagService();
-  const taskManager = new ItemTagTaskManager(iS, iMS, iTS);
+  const taskManager = new TaskManager(iS, iMS, iTS);
 
   // Move
 
@@ -46,7 +45,7 @@ const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, option
       const conflictingTags = await iTS.haveConflictingTags(item.path, destination.path, handler);
       if (conflictingTags) throw new ConflictingTagsInTheHierarchy();
     };
-  runner.setTaskPreHookHandler(itemTaskManager.getMoveItemTaskName(), checkForConflictingTagsOnMove);
+  runner.setTaskPreHookHandler(itemTaskManager.getMoveTaskName(), checkForConflictingTagsOnMove);
 
   // Copy
 
@@ -73,7 +72,7 @@ const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, option
       const conflictingTags = await iTS.haveConflictingTags(original.path, destinationPath, handler);
       if (conflictingTags) throw new ConflictingTagsInTheHierarchy();
     };
-  runner.setTaskPreHookHandler(itemTaskManager.getCopyItemTaskName(), checkForConflictingTagsOnCopy);
+  runner.setTaskPreHookHandler(itemTaskManager.getCopyTaskName(), checkForConflictingTagsOnCopy);
 
   /**
    * Copy orignal item's tags to the item copy
@@ -86,7 +85,7 @@ const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, option
     async (copy: Item, actor, { handler }, { original }) => {
       await iTS.copyTags(original, copy, actor.id, handler);
     };
-  runner.setTaskPostHookHandler(itemTaskManager.getCopyItemTaskName(), copyTagsFromOriginal);
+  runner.setTaskPostHookHandler(itemTaskManager.getCopyTaskName(), copyTagsFromOriginal);
 
   // schemas
   fastify.addSchema(common);
@@ -95,8 +94,8 @@ const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, option
   fastify.get<{ Params: { itemId: string } }>(
     '/:itemId/tags', { schema: getItemTags },
     async ({ member, params: { itemId }, log }) => {
-      const task = taskManager.createGetItemsItemTagsTask(member, itemId);
-      return runner.run([task], log);
+      const task = taskManager.createGetOfItemTask(member, itemId);
+      return runner.runSingle(task, log);
     }
   );
 
@@ -105,7 +104,7 @@ const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, option
     '/:itemId/tags', { schema: create },
     async ({ member, params: { itemId }, body, log }) => {
       const task = taskManager.createCreateTask(member, body, itemId);
-      return runner.run([task], log);
+      return runner.runSingle(task, log);
     }
   );
 
@@ -114,7 +113,7 @@ const plugin: FastifyPluginAsync<GraaspItemTagsOptions> = async (fastify, option
     '/:itemId/tags/:id', { schema: deleteOne },
     async ({ member, params: { itemId, id }, log }) => {
       const task = taskManager.createDeleteTask(member, id, itemId);
-      return runner.run([task], log);
+      return runner.runSingle(task, log);
     }
   );
 };

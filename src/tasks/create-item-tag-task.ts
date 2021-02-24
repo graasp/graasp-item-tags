@@ -14,9 +14,8 @@ import { BaseItemTag } from '../base-item-tag';
 import { ItemTagCreateHookHandlerExtraData } from '../interfaces/item-tag-task';
 import { ItemTag } from '../interfaces/item-tag';
 
-export class CreateItemTagTask extends BaseItemTagTask {
+export class CreateItemTagTask extends BaseItemTagTask<ItemTag> {
   get name(): string { return CreateItemTagTask.name; }
-  private subtasks: BaseItemTagTask[];
   preHookHandler: PreHookHandlerType<ItemTag, ItemTagCreateHookHandlerExtraData>;
 
   constructor(member: Member, data: Partial<ItemTag>, itemId: string,
@@ -25,10 +24,6 @@ export class CreateItemTagTask extends BaseItemTagTask {
     super(member, itemService, itemMembershipService, itemTagService);
     this.data = data;
     this.targetId = itemId;
-  }
-
-  get result(): ItemTag | ItemTag[] {
-    return !this.subtasks ? this._result : this.subtasks[this.subtasks.length - 1].result;
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
@@ -43,6 +38,7 @@ export class CreateItemTagTask extends BaseItemTagTask {
     if (!hasRights) throw new UserCannotAdminItem(this.targetId);
 
     const tagId = this.data.tagId;
+
     // check if tag exists
     const tag = await this.itemTagService.getTag(tagId, handler);
     if (!tag) throw new TagNotFound(tagId);

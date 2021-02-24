@@ -1,5 +1,3 @@
-// global
-import { TaskManager } from 'graasp';
 // other services
 import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
@@ -9,8 +7,9 @@ import { CreateItemTagTask } from './tasks/create-item-tag-task';
 import { DeleteItemTagTask } from './tasks/delete-item-tag-task';
 import { BaseItemTagTask } from './tasks/base-item-tag-task';
 import { GetItemsItemTagsTask } from './tasks/get-items-item-tags-task';
+import { ItemTagTaskManager } from './interfaces/item-tag-task-manager';
 
-export class ItemTagTaskManager implements TaskManager<Member, ItemTag> {
+export class TaskManager implements ItemTagTaskManager {
   private itemService: ItemService;
   private itemMembershipService: ItemMembershipService;
   private itemTagService: ItemTagService;
@@ -23,10 +22,13 @@ export class ItemTagTaskManager implements TaskManager<Member, ItemTag> {
     this.itemMembershipService = itemMembershipService;
     this.itemTagService = itemTagService;
   }
+
   getCreateTaskName(): string { return CreateItemTagTask.name; }
   getGetTaskName(): string { throw new Error('Method not implemented.'); }
   getUpdateTaskName(): string { throw new Error('Method not implemented.'); }
   getDeleteTaskName(): string { return DeleteItemTagTask.name; }
+
+  getGetOfItemTaskName(): string { return GetItemsItemTagsTask.name; }
 
   // CRUD
   createCreateTask(member: Member, data: Partial<ItemTag>, itemId: string): CreateItemTagTask {
@@ -35,12 +37,12 @@ export class ItemTagTaskManager implements TaskManager<Member, ItemTag> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createGetTask(actor: Member, objectId: string): BaseItemTagTask {
+  createGetTask(member: Member, objectId: string): BaseItemTagTask<ItemTag> {
     throw new Error('Method not implemented.');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createUpdateTask(member: Member, objectId: string, data: Partial<ItemTag>): BaseItemTagTask {
+  createUpdateTask(member: Member, objectId: string, data: Partial<ItemTag>): BaseItemTagTask<ItemTag> {
     throw new Error('Method not implemented.');
   }
 
@@ -50,8 +52,8 @@ export class ItemTagTaskManager implements TaskManager<Member, ItemTag> {
   }
 
   // Other
-  createGetItemsItemTagsTask(actor: Member, itemId: string): GetItemsItemTagsTask {
-    return new GetItemsItemTagsTask(actor, itemId,
+  createGetOfItemTask(member: Member, itemId: string): GetItemsItemTagsTask {
+    return new GetItemsItemTagsTask(member, itemId,
       this.itemService, this.itemMembershipService, this.itemTagService);
   }
 }

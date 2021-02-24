@@ -6,26 +6,9 @@ import { Member, ItemService, ItemMembershipService } from 'graasp';
 import { ItemNotFound, UserCannotAdminItem, ItemTagNotFound } from '../util/graasp-item-tags-error';
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
+import { ItemTag } from '../interfaces/item-tag';
 
-export class DeleteItemTagSubTask extends BaseItemTagTask {
-  get name(): string { return DeleteItemTagSubTask.name; }
-
-  constructor(member: Member, id: string,
-    itemService: ItemService, itemMembershipService: ItemMembershipService,
-    itemTagService: ItemTagService) {
-    super(member, itemService, itemMembershipService, itemTagService);
-    this.targetId = id;
-  }
-
-  async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
-    const itemTag = await this.itemTagService.delete(this.targetId, handler);
-    this.status = 'OK';
-    this._result = itemTag;
-  }
-}
-
-export class DeleteItemTagTask extends BaseItemTagTask {
+export class DeleteItemTagTask extends BaseItemTagTask<ItemTag> {
   get name(): string { return DeleteItemTagTask.name; }
 
   private itemId: string;
@@ -51,7 +34,6 @@ export class DeleteItemTagTask extends BaseItemTagTask {
 
     // delete tag
     const itemTag = await this.itemTagService.deleteAtItem(this.targetId, item, handler);
-
     if (!itemTag) throw new ItemTagNotFound(this.targetId);
 
     // return item tags

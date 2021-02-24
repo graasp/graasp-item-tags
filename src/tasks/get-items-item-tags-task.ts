@@ -4,10 +4,11 @@ import { DatabaseTransactionHandler } from 'graasp';
 import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
 import { ItemTagService } from '../db-service';
+import { ItemTag } from '../interfaces/item-tag';
 import { ItemNotFound, UserCannotReadItem } from '../util/graasp-item-tags-error';
 import { BaseItemTagTask } from './base-item-tag-task';
 
-export class GetItemsItemTagsTask extends BaseItemTagTask {
+export class GetItemsItemTagsTask extends BaseItemTagTask<ItemTag[]> {
   get name(): string { return GetItemsItemTagsTask.name; }
 
   constructor(member: Member, itemId: string,
