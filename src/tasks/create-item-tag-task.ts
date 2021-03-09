@@ -5,7 +5,7 @@ import { DatabaseTransactionHandler, PreHookHandlerType } from 'graasp';
 import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
 import {
-  ItemNotFound, UserCannotAdminItem, ItemHasTag,
+  ItemNotFound, MemberCannotAdminItem, ItemHasTag,
   TagNotFound, ConflictingTagsInTheHierarchy
 } from '../util/graasp-item-tags-error';
 import { ItemTagService } from '../db-service';
@@ -34,8 +34,8 @@ export class CreateItemTagTask extends BaseItemTagTask<ItemTag> {
     if (!item) throw new ItemNotFound(this.targetId);
 
     // verify if member adding the new tag has rights for that
-    const hasRights = await this.itemMembershipService.canAdmin(this.actor, item, handler);
-    if (!hasRights) throw new UserCannotAdminItem(this.targetId);
+    const hasRights = await this.itemMembershipService.canAdmin(this.actor.id, item, handler);
+    if (!hasRights) throw new MemberCannotAdminItem(this.targetId);
 
     const tagId = this.data.tagId;
 

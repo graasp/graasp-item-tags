@@ -5,7 +5,7 @@ import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
 import { ItemTagService } from '../db-service';
 import { ItemTag } from '../interfaces/item-tag';
-import { ItemNotFound, UserCannotReadItem } from '../util/graasp-item-tags-error';
+import { ItemNotFound, MemberCannotReadItem } from '../util/graasp-item-tags-error';
 import { BaseItemTagTask } from './base-item-tag-task';
 
 export class GetItemsItemTagsTask extends BaseItemTagTask<ItemTag[]> {
@@ -26,8 +26,8 @@ export class GetItemsItemTagsTask extends BaseItemTagTask<ItemTag[]> {
     if (!item) throw new ItemNotFound(this.targetId);
 
     // verify if member getting the tags has rights for that
-    const hasRights = await this.itemMembershipService.canRead(this.actor, item, handler);
-    if (!hasRights) throw new UserCannotReadItem(this.targetId);
+    const hasRights = await this.itemMembershipService.canRead(this.actor.id, item, handler);
+    if (!hasRights) throw new MemberCannotReadItem(this.targetId);
 
     // get tags
     const itemTags = await this.itemTagService.getAll(item, handler);

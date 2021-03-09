@@ -23,14 +23,14 @@ export class ItemNotFound extends GraaspItemTagsError {
     super({ code: 'GITERR001', statusCode: 404, message: 'Item not found' }, data);
   }
 }
-export class UserCannotReadItem extends GraaspItemTagsError {
+export class MemberCannotReadItem extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR002', statusCode: 403, message: 'User cannot read item' }, data);
+    super({ code: 'GITERR002', statusCode: 403, message: 'Member cannot read item' }, data);
   }
 }
-export class UserCannotAdminItem extends GraaspItemTagsError {
+export class MemberCannotAdminItem extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR003', statusCode: 403, message: 'User cannot admin item' }, data);
+    super({ code: 'GITERR003', statusCode: 403, message: 'Member cannot admin item' }, data);
   }
 }
 export class ItemHasTag extends GraaspItemTagsError {

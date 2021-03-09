@@ -3,7 +3,7 @@ import { DatabaseTransactionHandler } from 'graasp';
 // other services
 import { Member, ItemService, ItemMembershipService } from 'graasp';
 // local
-import { ItemNotFound, UserCannotAdminItem, ItemTagNotFound } from '../util/graasp-item-tags-error';
+import { ItemNotFound, MemberCannotAdminItem, ItemTagNotFound } from '../util/graasp-item-tags-error';
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
 import { ItemTag } from '../interfaces/item-tag';
@@ -29,8 +29,8 @@ export class DeleteItemTagTask extends BaseItemTagTask<ItemTag> {
     if (!item) throw new ItemNotFound(this.itemId);
 
     // verify if member removing the tag has rights for that
-    const hasRights = await this.itemMembershipService.canAdmin(this.actor, item, handler);
-    if (!hasRights) throw new UserCannotAdminItem(this.targetId);
+    const hasRights = await this.itemMembershipService.canAdmin(this.actor.id, item, handler);
+    if (!hasRights) throw new MemberCannotAdminItem(this.targetId);
 
     // delete tag
     const itemTag = await this.itemTagService.deleteAtItem(this.targetId, item, handler);

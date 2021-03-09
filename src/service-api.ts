@@ -90,7 +90,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   // schemas
   fastify.addSchema(common);
 
-  // // get item tags
+  // get item tags
   fastify.get<{ Params: { itemId: string } }>(
     '/:itemId/tags', { schema: getItemTags },
     async ({ member, params: { itemId }, log }) => {
