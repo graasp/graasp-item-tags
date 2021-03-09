@@ -20,9 +20,7 @@
     "url": "https://github.com/graasp/graasp-item-tags/issues"
   },
   "homepage": "https://github.com/graasp/graasp-item-tags#readme",
-  "dependencies": {
-    "fastify-plugin": "^3.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/eslint": "^7.2.5",
     "@types/graasp": "git://github.com/graasp/graasp-types.git#master",

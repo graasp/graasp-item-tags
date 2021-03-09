@@ -1,6 +1,5 @@
 // global
 import { FastifyPluginAsync } from 'fastify';
-import fp from 'fastify-plugin';
 
 import {
   IdParam, Item, ItemCopyHookHandlerExtraData,
@@ -118,7 +117,4 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   );
 };
 
-export default fp(plugin, {
-  fastify: '3.x',
-  name: 'graasp-item-tags'
-});
+export default plugin;
