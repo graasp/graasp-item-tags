@@ -8,6 +8,7 @@ import { DeleteItemTagTask } from './tasks/delete-item-tag-task';
 import { BaseItemTagTask } from './tasks/base-item-tag-task';
 import { GetItemsItemTagsTask } from './tasks/get-items-item-tags-task';
 import { ItemTagTaskManager } from './interfaces/item-tag-task-manager';
+import { GetAvailableTagsTask } from './tasks/get-available-tags-task';
 
 export class TaskManager implements ItemTagTaskManager {
   private itemService: ItemService;
@@ -29,6 +30,7 @@ export class TaskManager implements ItemTagTaskManager {
   getDeleteTaskName(): string { return DeleteItemTagTask.name; }
 
   getGetOfItemTaskName(): string { return GetItemsItemTagsTask.name; }
+  getGetAvailableTagsName(): string { return GetAvailableTagsTask.name; }
 
   // CRUD
   createCreateTask(member: Member, data: Partial<ItemTag>, itemId: string): CreateItemTagTask {
@@ -55,5 +57,9 @@ export class TaskManager implements ItemTagTaskManager {
   createGetOfItemTask(member: Member, itemId: string): GetItemsItemTagsTask {
     return new GetItemsItemTagsTask(member, itemId,
       this.itemService, this.itemMembershipService, this.itemTagService);
+  }
+
+  createGetAvailableTagsTask(member: Member): GetAvailableTagsTask {
+    return new GetAvailableTagsTask(member, this.itemTagService);
   }
 }

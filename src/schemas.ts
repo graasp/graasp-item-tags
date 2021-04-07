@@ -44,6 +44,18 @@ export default {
         tagId: { $ref: 'http://graasp.org/#/definitions/uuid' }
       },
       additionalProperties: false
+    },
+
+    // tag
+    tag: {
+      type: 'object',
+      properties: {
+        id: { $ref: 'http://graasp.org/#/definitions/uuid' },
+        name: { type: 'string' },
+        nested: { type: 'string' },
+        createdAt: { type: 'string' }
+      },
+      additionalProperties: false
     }
   }
 };
@@ -81,8 +93,19 @@ const deleteOne = {
   }
 };
 
+// schema for getting available tags
+const getTags = {
+  response: {
+    200: {
+      type: 'array',
+      items: { $ref: 'http://graasp.org/item-tags/#/definitions/tag' }
+    }
+  }
+};
+
 export {
   getItemTags,
   create,
-  deleteOne
+  deleteOne,
+  getTags
 };

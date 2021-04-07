@@ -7,7 +7,7 @@ import { ItemTag } from './interfaces/item-tag';
 import { Tag } from './interfaces/tag';
 
 /**
- * Database's first layer of abstraction for Item Tags and (exceptionally) for Tags
+ * Database's first layer of abstraction for Item Tags and (exceptionally) for Tags (at the bottom)
  */
 export class ItemTagService {
   // the 'safe' way to dynamically generate the columns names:
@@ -202,5 +202,17 @@ export class ItemTagService {
         WHERE id = ${tagId}
       `)
       .then(({ rows }) => rows[0] || null);
+  }
+
+  /**
+   * Get all available tags.
+   * @param transactionHandler Database transaction handler
+   */
+  async getAllTags(transactionHandler: TrxHandler): Promise<readonly Tag[]> {
+    return transactionHandler.query<Tag>(sql`
+        SELECT ${ItemTagService.allColumnsTags}
+        FROM tag
+      `)
+      .then(({ rows }) => rows);
   }
 }

@@ -11,7 +11,8 @@ import {
 import common, {
   getItemTags,
   create,
-  deleteOne
+  deleteOne,
+  getTags
 } from './schemas';
 import { ItemTagService } from './db-service';
 import { ItemTag } from './interfaces/item-tag';
@@ -88,6 +89,15 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
   // schemas
   fastify.addSchema(common);
+
+  // get available tags
+  fastify.get(
+    '/tags', { schema: getTags },
+    async ({ member, log }) => {
+      const task = taskManager.createGetAvailableTagsTask(member);
+      return runner.runSingle(task, log);
+    }
+  );
 
   // get item tags
   fastify.get<{ Params: { itemId: string } }>(
