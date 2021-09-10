@@ -1,4 +1,8 @@
-CREATE TYPE "nested_tag_enum" AS ENUM ('clean', 'fail');
+-- This allows to define the behavior of the tags
+-- allow : allows tags to be nested in the same subtree (tags are applied to children)
+-- fail : doesn't allow tags to be nested in the same subtree (tags are applied to children)
+-- nocascade : allows tags to be nested in the same subtree (tags are NOT applied to children)
+CREATE TYPE "nested_tag_enum" AS ENUM ('allow', 'fail', 'nocascade');
 
 CREATE TABLE "tag" (
   "id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -21,3 +25,6 @@ CREATE TABLE "item_tag" (
   PRIMARY KEY ("tag_id", "item_path")
 );
 CREATE INDEX "item_tag_item_path_idx" ON "item_tag" USING gist ("item_path");
+
+
+INSERT INTO "tag" VALUES('d8294dbc-15aa-47d6-998d-5abd6b7afb1d', 'item-pinned', 'nocascade')

@@ -26,6 +26,17 @@ export class ItemTagService {
     sql`, `
   );
 
+  private static allColumnsForJoins = sql.join(
+    [
+      [['item_tag', 'id'], ['id']],
+      [['item_tag', 'tag_id'], ['tagId']],
+      [['item_tag', 'item_path'], ['itemPath']],
+      [['item_tag', 'creator'], ['creator']],
+      [['item_tag', 'created_at'], ['createdAt']],
+    ].map(c => sql.join(c.map(cwa => sql.identifier(cwa)), sql` AS `)),
+    sql`, `
+  );
+
   /**
    * Get all item tags, local or inherited, for the given `item`.
    * @param item Item
@@ -33,8 +44,11 @@ export class ItemTagService {
    */
   async getAll(item: Item, transactionHandler: TrxHandler): Promise<ItemTag[]> {
     return transactionHandler.query<ItemTag>(sql`
-        SELECT ${ItemTagService.allColumns} FROM item_tag
-        WHERE item_path @> ${item.path}
+        SELECT ${ItemTagService.allColumnsForJoins} FROM item_tag
+        INNER JOIN tag ON tag.id = tag_id 
+        WHERE (item_path @> ${item.path}
+        AND nested != 'nocascade')
+        OR item_path = ${item.path}
         ORDER BY nlevel(item_path) DESC
       `)
       // TODO: is there a better way?
