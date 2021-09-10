@@ -2,7 +2,7 @@
 import { FastifyPluginAsync } from 'fastify';
 
 import {
-  IdParam, Item, ItemCopyHookHandlerExtraData,
+  IdParam, IdsParams, Item, ItemCopyHookHandlerExtraData,
   ItemMoveHookHandlerExtraData,
   PostHookHandlerType,
   PreHookHandlerType
@@ -12,7 +12,8 @@ import common, {
   getItemTags,
   create,
   deleteOne,
-  getTags
+  getTags,
+  getMany
 } from './schemas';
 import { ItemTagService } from './db-service';
 import { ItemTag } from './interfaces/item-tag';
@@ -92,10 +93,18 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
   // get available tags
   fastify.get(
-    '/tags', { schema: getTags },
+    '/tags/list', { schema: getTags },
     async ({ member, log }) => {
       const task = taskManager.createGetAvailableTagsTask(member);
       return runner.runSingle(task, log);
+    }
+  );
+
+  fastify.get<{ Querystring: IdsParams }>(
+    '/tags', { schema: getMany }, 
+    async ({ member, query: { id: ids }, log }) => {
+      const tasks = ids.map(id => taskManager.createGetOfItemTask(member, id));
+      return runner.runMultiple(tasks, log);
     }
   );
 

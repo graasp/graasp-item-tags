@@ -103,9 +103,28 @@ const getTags = {
   }
 };
 
+const getMany = {
+  querystring: {
+    allOf: [
+      { $ref: 'http://graasp.org/#/definitions/idsQuery' },
+      { properties: { id: { maxItems: 10 } } }
+    ]
+  },
+  response: {
+    200: {
+      type: 'array',
+      items: { 
+        type: 'array',
+        items: { $ref: 'http://graasp.org/item-tags/#/definitions/itemTag' }
+      }
+    }
+  }
+};
+
 export {
   getItemTags,
   create,
   deleteOne,
-  getTags
+  getTags,
+  getMany
 };
