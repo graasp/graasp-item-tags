@@ -1,7 +1,6 @@
 -- This allows to define the behavior of the tags
 -- allow : allows tags to be nested in the same subtree (tags are applied to children)
 -- fail : doesn't allow tags to be nested in the same subtree (tags are applied to children)
--- nocascade : allows tags to be nested in the same subtree (tags are NOT applied to children)
 CREATE TYPE "nested_tag_enum" AS ENUM ('allow', 'fail');
 
 CREATE TABLE "tag" (

@@ -26,7 +26,6 @@ export class ItemTagService {
     sql`, `
   );
 
-
   /**
    * Get all item tags, local or inherited, for the given `item`.
    * @param item Item
