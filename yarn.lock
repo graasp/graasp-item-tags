@@ -120,9 +120,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/graasp@git://github.com/graasp/graasp-types.git":
+"@types/graasp@github:graasp/graasp-types":
   version: 0.1.0
-  resolution: "@types/graasp@git://github.com/graasp/graasp-types.git#commit=803e87c1dc314eb15369a070e3ab96853b9c5d90"
+  resolution: "@types/graasp@https://github.com/graasp/graasp-types.git#commit=803e87c1dc314eb15369a070e3ab96853b9c5d90"
   checksum: 4518ff894fda7b638ea2f175841ec864d7e0c63257648e4dd88ad191d24b85fdde42f2e0225dcf320bb8007a984ff1ea2c8c153a81e13c530185a609a004d8f8
   languageName: node
   linkType: hard
@@ -905,7 +905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify@npm:^3.8.0":
+"fastify@npm:^3.19.0":
   version: 3.23.1
   resolution: "fastify@npm:3.23.1"
   dependencies:
@@ -956,14 +956,14 @@ __metadata:
   linkType: hard
 
 "find-my-way@npm:^4.1.0":
-  version: 4.3.3
-  resolution: "find-my-way@npm:4.3.3"
+  version: 4.4.0
+  resolution: "find-my-way@npm:4.4.0"
   dependencies:
     fast-decode-uri-component: ^1.0.1
     fast-deep-equal: ^3.1.3
     safe-regex2: ^2.0.0
     semver-store: ^0.3.0
-  checksum: c5f212d2d2a5e76be91a86409b2de9391a1c3cf5210d357facf0fe91d1e46608865aa2396a98a8d4772116bfae2eb0b05abe4efa725d5cf3cc9b9554bb34e048
+  checksum: ec09b9af8f88b8bd0d0dc456be16e2db997dae8ed9d9a1989abd025e4f87f0e8acb0aaf228061f093e22c2b0f14cf43417300a7d32640eb908445b683b3541c6
   languageName: node
   linkType: hard
 
@@ -1082,12 +1082,12 @@ __metadata:
   resolution: "graasp-item-tags@workspace:."
   dependencies:
     "@types/eslint": ^7.2.5
-    "@types/graasp": "git://github.com/graasp/graasp-types.git"
+    "@types/graasp": "github:graasp/graasp-types"
     "@types/node": ^14.14.7
     "@typescript-eslint/eslint-plugin": ^4.7.0
     "@typescript-eslint/parser": ^4.7.0
     eslint: ^7.13.0
-    fastify: ^3.8.0
+    fastify: ^3.19.0
     slonik: ^23.0.2
     typescript: ^4.0.5
   languageName: unknown
