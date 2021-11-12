@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc && tsc --project tsconfig.declaration.json --declaration --declarationDir ./types",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,6 @@
     "url": "https://github.com/graasp/graasp-item-tags/issues"
   },
   "homepage": "https://github.com/graasp/graasp-item-tags#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/eslint": "^7.2.5",
     "@types/graasp": "github:graasp/graasp-types",
@@ -31,5 +31,6 @@
     "fastify": "^3.8.0",
     "slonik": "^23.0.2",
     "typescript": "^4.0.5"
-  }
+  },
+  "packageManager": "yarn@3.2.0-rc.3"
 }
