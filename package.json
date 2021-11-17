@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "description": "",
   "main": "dist/service-api.js",
-  "types": "types/index.d.ts",
+  "types": "dist/service-api.d.ts",
   "scripts": {
     "build": "tsc && tsc --project tsconfig.declaration.json --declaration --declarationDir ./types",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "npm run build"
+    "prepare": "yarn build",
+    "prepack": "yarn build"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,6 @@
     "url": "https://github.com/graasp/graasp-item-tags/issues"
   },
   "homepage": "https://github.com/graasp/graasp-item-tags#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/eslint": "^7.2.5",
     "@types/graasp": "github:graasp/graasp-types",
@@ -28,8 +28,9 @@
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
     "eslint": "^7.13.0",
-    "fastify": "^3.8.0",
+    "fastify": "^3.19.0",
     "slonik": "^23.0.2",
     "typescript": "^4.0.5"
-  }
+  },
+  "packageManager": "yarn@3.2.0-rc.3"
 }
