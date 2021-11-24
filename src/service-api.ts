@@ -82,8 +82,10 @@ const plugin: FastifyPluginAsync = async (fastify) => {
    * @param extraData `extraData.original` Original item
    */
   const copyTagsFromOriginal: PostHookHandlerType<Item, ItemCopyHookHandlerExtraData> =
-    async (copy: Item, actor, { handler }, { original }) => {
-      await iTS.copyTags(original, copy, actor.id, handler);
+    async (copy: Item, actor, { handler }, { original, shouldCopyTags = true }) => {
+      if (shouldCopyTags) {
+        await iTS.copyTags(original, copy, actor.id, handler);
+      }
     };
   runner.setTaskPostHookHandler(itemTaskManager.getCopyTaskName(), copyTagsFromOriginal);
 
