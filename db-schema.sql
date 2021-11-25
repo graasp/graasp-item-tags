@@ -1,4 +1,4 @@
-CREATE TYPE "nested_tag_enum" AS ENUM ('clean', 'fail');
+CREATE TYPE "nested_tag_enum" AS ENUM ('allow', 'fail');
 
 CREATE TABLE "tag" (
   "id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -20,4 +20,5 @@ CREATE TABLE "item_tag" (
   "created_at" timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
   PRIMARY KEY ("tag_id", "item_path")
 );
+
 CREATE INDEX "item_tag_item_path_idx" ON "item_tag" USING gist ("item_path");
