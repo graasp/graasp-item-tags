@@ -23,7 +23,7 @@
   "homepage": "https://github.com/graasp/graasp-item-tags#readme",
   "devDependencies": {
     "@types/eslint": "^7.2.5",
-    "@types/graasp": "github:graasp/graasp-types#9/copyHookTypes",
+    "@types/graasp": "github:graasp/graasp-types",
     "@types/node": "^14.14.7",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
