@@ -1,22 +1,33 @@
 // global
-import { DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler } from 'graasp';
 // other services
-import { Member, ItemService, ItemMembershipService } from 'graasp';
+import { ItemService, ItemMembershipService } from 'graasp';
 // local
-import { ItemNotFound, MemberCannotAdminItem, ItemTagNotFound } from '../util/graasp-item-tags-error';
+import {
+  ItemNotFound,
+  MemberCannotAdminItem,
+  ItemTagNotFound,
+} from '../util/graasp-item-tags-error';
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
 import { ItemTag } from '../interfaces/item-tag';
 
-export class DeleteItemTagTask extends BaseItemTagTask<ItemTag> {
-  get name(): string { return DeleteItemTagTask.name; }
+export class DeleteItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
+  get name(): string {
+    return DeleteItemTagTask.name;
+  }
 
   private itemId: string;
 
-  constructor(member: Member, id: string, itemId: string,
-    itemService: ItemService, itemMembershipService: ItemMembershipService,
-    itemTagService: ItemTagService) {
-    super(member, itemService, itemMembershipService, itemTagService);
+  constructor(
+    member: Actor,
+    id: string,
+    itemId: string,
+    itemService: ItemService,
+    itemMembershipService: ItemMembershipService,
+    itemTagService: ItemTagService,
+  ) {
+    super(member, itemTagService, itemService, itemMembershipService);
     this.targetId = id;
     this.itemId = itemId;
   }

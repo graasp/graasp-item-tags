@@ -9,8 +9,7 @@ export interface ItemTagTaskManager<A extends Actor = Actor> {
   getUpdateTaskName(): string;
   getDeleteTaskName(): string;
 
-  getGetOfItemTaskName(): string
-
+  getGetOfItemTaskName(): string;
 
   createCreateTask(actor: A, object: Partial<ItemTag>, extra?: unknown): Task<A, ItemTag>;
   createGetTask(actor: A, objectId: string): Task<A, ItemTag>;

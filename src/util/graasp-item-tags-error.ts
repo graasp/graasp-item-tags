@@ -2,7 +2,7 @@ import { GraaspErrorDetails, GraaspError } from 'graasp';
 
 export class GraaspItemTagsError implements GraaspError {
   name: string;
-  code: string
+  code: string;
   message: string;
   statusCode?: number;
   data?: unknown;
@@ -50,6 +50,13 @@ export class TagNotFound extends GraaspItemTagsError {
 }
 export class ConflictingTagsInTheHierarchy extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR007', statusCode: 403, message: 'Tag already present in the hierarchy - ancestors or descendants' }, data);
+    super(
+      {
+        code: 'GITERR007',
+        statusCode: 403,
+        message: 'Tag already present in the hierarchy - ancestors or descendants',
+      },
+      data,
+    );
   }
 }
