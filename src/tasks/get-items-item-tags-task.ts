@@ -1,39 +1,40 @@
 // global
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, Item } from 'graasp';
 // other services
 import { ItemService, ItemMembershipService } from 'graasp';
 // local
 import { ItemTagService } from '../db-service';
 import { ItemTag } from '../interfaces/item-tag';
-import { ItemNotFound, MemberCannotReadItem } from '../util/graasp-item-tags-error';
 import { BaseItemTagTask } from './base-item-tag-task';
+
+type InputType = {
+  item?: Item
+}
 
 export class GetItemsItemTagsTask extends BaseItemTagTask<Actor, ItemTag[]> {
   get name(): string {
     return GetItemsItemTagsTask.name;
   }
 
+  input: InputType
+  getInput: () => InputType
+
   constructor(
     member: Actor,
-    itemId: string,
     itemService: ItemService,
     itemMembershipService: ItemMembershipService,
     itemTagService: ItemTagService,
+    input?: InputType
   ) {
     super(member, itemTagService, itemService, itemMembershipService);
-    this.targetId = itemId;
+    this.input = input
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
     this.status = 'RUNNING';
 
-    // get item for which we're fetching its tags
-    const item = await this.itemService.get(this.targetId, handler);
-    if (!item) throw new ItemNotFound(this.targetId);
-
-    // verify if member getting the tags has rights for that
-    const hasRights = await this.itemMembershipService.canRead(this.actor.id, item, handler);
-    if (!hasRights) throw new MemberCannotReadItem(this.targetId);
+    const { item } = this.input
+    this.targetId = item?.id
 
     // get tags
     const itemTags = await this.itemTagService.getAll(item, handler);

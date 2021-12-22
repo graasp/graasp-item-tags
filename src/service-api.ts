@@ -10,7 +10,7 @@ import {
   PreHookHandlerType,
 } from 'graasp';
 // local
-import common, { getItemTags, create, deleteOne, getTags } from './schemas';
+import common, { getItemTags, create, deleteOne, getTags } from './schemas/schemas';
 import { ItemTagService } from './db-service';
 import { ItemTag } from './interfaces/item-tag';
 import { ConflictingTagsInTheHierarchy } from './util/graasp-item-tags-error';
@@ -24,7 +24,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   } = fastify;
 
   const iTS = new ItemTagService();
-  const taskManager = new TaskManager(iS, iMS, iTS);
+  const taskManager = new TaskManager(iS, iMS, iTS, itemTaskManager);
 
   // Move
 
@@ -108,8 +108,8 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     '/:itemId/tags',
     { schema: getItemTags },
     async ({ member, params: { itemId }, log }) => {
-      const task = taskManager.createGetOfItemTask(member, itemId);
-      return runner.runSingle(task, log);
+      const tasks = taskManager.createGetOfItemTaskSequence(member, itemId);
+      return runner.runSingleSequence(tasks, log);
     },
   );
 

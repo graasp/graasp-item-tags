@@ -1,5 +1,5 @@
 // global
-import { Actor, Task } from 'graasp';
+import { Actor, Item, Task } from 'graasp';
 // local
 import { ItemTag } from './item-tag';
 
@@ -16,5 +16,5 @@ export interface ItemTagTaskManager<A extends Actor = Actor> {
   createUpdateTask(actor: A, objectId: string, object: Partial<ItemTag>): Task<A, ItemTag>;
   createDeleteTask(actor: A, objectId: string, extra?: unknown): Task<A, ItemTag>;
 
-  createGetOfItemTask(actor: A, itemId: string): Task<A, ItemTag[]>;
+  createGetOfItemTask(actor: A, item: Item): Task<A, ItemTag[]>;
 }
