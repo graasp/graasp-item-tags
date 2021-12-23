@@ -1,12 +1,15 @@
 // global
 import { FastifyLoggerInstance } from 'fastify';
-import { DatabaseTransactionHandler, PreHookHandlerType } from 'graasp';
+import { Actor, DatabaseTransactionHandler, PreHookHandlerType } from 'graasp';
 // other services
-import { Member, ItemService, ItemMembershipService } from 'graasp';
+import { ItemService, ItemMembershipService } from 'graasp';
 // local
 import {
-  ItemNotFound, MemberCannotAdminItem, ItemHasTag,
-  TagNotFound, ConflictingTagsInTheHierarchy
+  ItemNotFound,
+  MemberCannotAdminItem,
+  ItemHasTag,
+  TagNotFound,
+  ConflictingTagsInTheHierarchy,
 } from '../util/graasp-item-tags-error';
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
@@ -14,14 +17,21 @@ import { BaseItemTag } from '../base-item-tag';
 import { ItemTagCreateHookHandlerExtraData } from '../interfaces/item-tag-task';
 import { ItemTag } from '../interfaces/item-tag';
 
-export class CreateItemTagTask extends BaseItemTagTask<ItemTag> {
-  get name(): string { return CreateItemTagTask.name; }
+export class CreateItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
+  get name(): string {
+    return CreateItemTagTask.name;
+  }
   preHookHandler: PreHookHandlerType<ItemTag, ItemTagCreateHookHandlerExtraData>;
 
-  constructor(member: Member, data: Partial<ItemTag>, itemId: string,
-    itemService: ItemService, itemMembershipService: ItemMembershipService,
-    itemTagService: ItemTagService) {
-    super(member, itemService, itemMembershipService, itemTagService);
+  constructor(
+    member: Actor,
+    data: Partial<ItemTag>,
+    itemId: string,
+    itemService: ItemService,
+    itemMembershipService: ItemMembershipService,
+    itemTagService: ItemTagService,
+  ) {
+    super(member, itemTagService, itemService, itemMembershipService);
     this.data = data;
     this.targetId = itemId;
   }
@@ -50,7 +60,11 @@ export class CreateItemTagTask extends BaseItemTagTask<ItemTag> {
     // check tag's "nesting" rule
     if (tag.nested === 'fail') {
       // check if tag exists "lower" in the tree or in the ancestors
-      const itemTagsAboveAndBelow = await this.itemTagService.getAllBelowOrAbove(item, tagId, handler);
+      const itemTagsAboveAndBelow = await this.itemTagService.getAllBelowOrAbove(
+        item,
+        tagId,
+        handler,
+      );
       if (itemTagsAboveAndBelow.length > 0) throw new ConflictingTagsInTheHierarchy(tagId);
     }
 

@@ -1,17 +1,24 @@
 // global
-import { DatabaseTransactionHandler } from 'graasp';
+import { DatabaseTransactionHandler, ItemMembershipService, ItemService } from 'graasp';
 // other services
-import { Member } from 'graasp';
+import { Actor } from 'graasp';
 // local
 import { ItemTagService } from '../db-service';
 import { Tag } from '../interfaces/tag';
 import { BaseItemTagTask } from './base-item-tag-task';
 
-export class GetAvailableTagsTask extends BaseItemTagTask<readonly Tag[]> {
-  get name(): string { return GetAvailableTagsTask.name; }
+export class GetAvailableTagsTask extends BaseItemTagTask<Actor, readonly Tag[]> {
+  get name(): string {
+    return GetAvailableTagsTask.name;
+  }
 
-  constructor(member: Member, itemTagService: ItemTagService) {
-    super(member, null, null, itemTagService);
+  constructor(
+    member: Actor,
+    itemTagService: ItemTagService,
+    itemService: ItemService,
+    itemMembershipService: ItemMembershipService,
+  ) {
+    super(member, itemTagService, itemService, itemMembershipService);
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {

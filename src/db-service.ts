@@ -18,12 +18,15 @@ export class ItemTagService {
       ['item_path', 'itemPath'],
       'creator',
       ['created_at', 'createdAt'],
-    ].map(c =>
-      !Array.isArray(c) ?
-        sql.identifier([c]) :
-        sql.join(c.map(cwa => sql.identifier([cwa])), sql` AS `)
+    ].map((c) =>
+      !Array.isArray(c)
+        ? sql.identifier([c])
+        : sql.join(
+          c.map((cwa) => sql.identifier([cwa])),
+          sql` AS `,
+        ),
     ),
-    sql`, `
+    sql`, `,
   );
 
   /**
@@ -32,13 +35,18 @@ export class ItemTagService {
    * @param transactionHandler Database transaction handler
    */
   async getAll(item: Item, transactionHandler: TrxHandler): Promise<ItemTag[]> {
-    return transactionHandler.query<ItemTag>(sql`
+    return (
+      transactionHandler
+        .query<ItemTag>(
+          sql`
         SELECT ${ItemTagService.allColumns} FROM item_tag
         WHERE item_path @> ${item.path}
         ORDER BY nlevel(item_path) DESC
-      `)
-      // TODO: is there a better way?
-      .then(({ rows }) => rows.slice(0));
+      `,
+        )
+        // TODO: is there a better way?
+        .then(({ rows }) => rows.slice(0))
+    );
   }
 
   /**
@@ -49,11 +57,30 @@ export class ItemTagService {
    */
   async hasTag(item: Item, tagId: string, transactionHandler: TrxHandler): Promise<boolean> {
     return transactionHandler
-      .oneFirst<string>(sql`
+      .oneFirst<string>(
+        sql`
         SELECT count(*) FROM item_tag
         WHERE tag_id = ${tagId} AND item_path = ${item.path}
-      `)
-      .then(count => parseInt(count, 10) === 1);
+      `,
+      )
+      .then((count) => parseInt(count, 10) === 1);
+  }
+
+  /**
+   * Check if item has tags.
+   * @param item Item
+   * @param tagIds array of tag id
+   * @param transactionHandler Database transaction handler
+   */
+  async hasTags(item: Item, tagIds: string[], transactionHandler: TrxHandler): Promise<boolean> {
+    return transactionHandler
+      .oneFirst<string>(
+        sql`
+        SELECT count(*) FROM item_tag
+        WHERE tag_id IN (${sql.join(tagIds, sql`, `)}) AND item_path = ${item.path}
+      `,
+      )
+      .then((count) => parseInt(count, 10) === tagIds.length);
   }
 
   /**
@@ -63,11 +90,14 @@ export class ItemTagService {
    */
   async create(itemTag: Partial<ItemTag>, transactionHandler: TrxHandler): Promise<ItemTag> {
     const { tagId, itemPath, creator } = itemTag;
-    return transactionHandler.query<ItemTag>(sql`
+    return transactionHandler
+      .query<ItemTag>(
+        sql`
         INSERT INTO item_tag (tag_id, item_path, creator)
         VALUES (${tagId}, ${itemPath}, ${creator})
         RETURNING ${ItemTagService.allColumns}
-      `)
+      `,
+      )
       .then(({ rows }) => rows[0]);
   }
 
@@ -77,11 +107,14 @@ export class ItemTagService {
    * @param transactionHandler Database transaction handler
    */
   async delete(id: string, transactionHandler: TrxHandler): Promise<ItemTag> {
-    return transactionHandler.query<ItemTag>(sql`
+    return transactionHandler
+      .query<ItemTag>(
+        sql`
         DELETE FROM item_tag
         WHERE id = ${id}
         RETURNING ${ItemTagService.allColumns}
-      `)
+      `,
+      )
       .then(({ rows }) => rows[0] || null);
   }
 
@@ -92,12 +125,15 @@ export class ItemTagService {
    * @param transactionHandler Database transaction handler
    */
   async deleteAtItem(id: string, item: Item, transactionHandler: TrxHandler): Promise<ItemTag> {
-    return transactionHandler.query<ItemTag>(sql`
+    return transactionHandler
+      .query<ItemTag>(
+        sql`
         DELETE FROM item_tag
         WHERE id = ${id}
           AND item_path = ${item.path}
         RETURNING ${ItemTagService.allColumns}
-      `)
+      `,
+      )
       .then(({ rows }) => rows[0] || null);
   }
 
@@ -108,17 +144,26 @@ export class ItemTagService {
    * @param tagId Tag id
    * @param transactionHandler Database transaction handler
    */
-  async getAllBelowOrAbove(item: Item, tagId: string, transactionHandler: TrxHandler): Promise<ItemTag[]> {
-    return transactionHandler.query<ItemTag>(sql`
+  async getAllBelowOrAbove(
+    item: Item,
+    tagId: string,
+    transactionHandler: TrxHandler,
+  ): Promise<ItemTag[]> {
+    return (
+      transactionHandler
+        .query<ItemTag>(
+          sql`
         SELECT ${ItemTagService.allColumns}
         FROM item_tag
         WHERE tag_id = ${tagId}
           AND (${item.path} @> item_path OR item_path @> ${item.path})
           AND item_path != ${item.path}
         ORDER BY nlevel(item_path) DESC
-      `)
-      // TODO: is there a better way?
-      .then(({ rows }) => rows.slice(0));
+      `,
+        )
+        // TODO: is there a better way?
+        .then(({ rows }) => rows.slice(0))
+    );
   }
 
   /**
@@ -128,16 +173,22 @@ export class ItemTagService {
    * @param itemPath2 Item path 2
    * @param transactionHandler Database transaction handler
    */
-  async haveConflictingTags(itemPath1: string, itemPath2: string, transactionHandler: TrxHandler): Promise<boolean> {
+  async haveConflictingTags(
+    itemPath1: string,
+    itemPath2: string,
+    transactionHandler: TrxHandler,
+  ): Promise<boolean> {
     return transactionHandler
-      .query<{ tagId: string, total: number }>(sql`
+      .query<{ tagId: string; total: number }>(
+        sql`
         SELECT tag_id AS "tagId", count(*) AS "total"
         FROM item_tag
         WHERE (${itemPath1} @> item_path -- get all below, or at, item1
           OR item_path @> ${itemPath2}) -- get all above, or at, item2
           AND tag_id IN (SELECT id FROM tag WHERE nested = 'fail')
         GROUP BY tag_id
-      `)
+      `,
+      )
       .then(({ rows }) => rows.some(({ total }) => total > 1));
   }
 
@@ -148,14 +199,21 @@ export class ItemTagService {
    * @param creatorId Creator id
    * @param transactionHandler Database transaction handler
    */
-  async copyTags(from: Item, to: Item, creatorId: string, transactionHandler: TrxHandler): Promise<readonly ItemTag[]> {
+  async copyTags(
+    from: Item,
+    to: Item,
+    creatorId: string,
+    transactionHandler: TrxHandler,
+  ): Promise<readonly ItemTag[]> {
     return transactionHandler
-      .query<ItemTag>(sql`
+      .query<ItemTag>(
+        sql`
         INSERT INTO item_tag (tag_id, item_path, creator)
         SELECT tag_id, ${to.path}, ${creatorId}
         FROM item_tag
         WHERE item_path = ${from.path}
-      `)
+      `,
+      )
       .then(({ rows }) => rows);
   }
 
@@ -178,17 +236,15 @@ export class ItemTagService {
 
   // Tags
   private static allColumnsTags = sql.join(
-    [
-      'id',
-      'name',
-      'nested',
-      ['created_at', 'createdAt'],
-    ].map(c =>
-      !Array.isArray(c) ?
-        sql.identifier([c]) :
-        sql.join(c.map(cwa => sql.identifier([cwa])), sql` AS `)
+    ['id', 'name', 'nested', ['created_at', 'createdAt']].map((c) =>
+      !Array.isArray(c)
+        ? sql.identifier([c])
+        : sql.join(
+          c.map((cwa) => sql.identifier([cwa])),
+          sql` AS `,
+        ),
     ),
-    sql`, `
+    sql`, `,
   );
 
   /**
@@ -197,10 +253,13 @@ export class ItemTagService {
    * @param transactionHandler Database transaction handler
    */
   async getTag(tagId: string, transactionHandler: TrxHandler): Promise<Tag> {
-    return transactionHandler.query<Tag>(sql`
+    return transactionHandler
+      .query<Tag>(
+        sql`
         SELECT ${ItemTagService.allColumnsTags} FROM tag
         WHERE id = ${tagId}
-      `)
+      `,
+      )
       .then(({ rows }) => rows[0] || null);
   }
 
@@ -209,10 +268,35 @@ export class ItemTagService {
    * @param transactionHandler Database transaction handler
    */
   async getAllTags(transactionHandler: TrxHandler): Promise<readonly Tag[]> {
-    return transactionHandler.query<Tag>(sql`
+    return transactionHandler
+      .query<Tag>(
+        sql`
         SELECT ${ItemTagService.allColumnsTags}
         FROM tag
-      `)
+      `,
+      )
+      .then(({ rows }) => rows);
+  }
+
+  /**
+   * Get item paths which have tagIds.
+   * @param tagIds tag ids
+   * @param transactionHandler Database transaction handler
+   * @returns item paths
+   */
+  async getItemPathsByTags(
+    tagIds: string[],
+    transactionHandler: TrxHandler,
+  ): Promise<readonly { item_path: string }[]> {
+    return transactionHandler
+      .query<{ item_path: string }>(
+        sql`
+        SELECT item_path from item_tag 
+        WHERE tag_id IN (${sql.join(tagIds, sql`, `)})
+        GROUP BY item_path
+        HAVING COUNT(*)>=${tagIds.length}
+    `,
+      )
       .then(({ rows }) => rows);
   }
 }
