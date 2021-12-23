@@ -67,9 +67,9 @@ export class ItemTagService {
   }
 
   /**
-   * Check if item has (local) tag.
+   * Check if item has tags.
    * @param item Item
-   * @param tagId Tag id
+   * @param tagIds array of tag id
    * @param transactionHandler Database transaction handler
    */
   async hasTags(item: Item, tagIds: string[], transactionHandler: TrxHandler): Promise<boolean> {
@@ -282,6 +282,7 @@ export class ItemTagService {
    * Get item paths which have tagIds.
    * @param tagIds tag ids
    * @param transactionHandler Database transaction handler
+   * @returns item paths
    */
   async getItemPathsByTags(
     tagIds: string[],

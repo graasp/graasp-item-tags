@@ -1,5 +1,13 @@
 // other services
-import { Member, ItemService, ItemMembershipService, Actor, Task, Item, ItemTaskManager } from 'graasp';
+import {
+  Member,
+  ItemService,
+  ItemMembershipService,
+  Actor,
+  Task,
+  Item,
+  ItemTaskManager,
+} from 'graasp';
 // local
 import { ItemTagService } from './db-service';
 import { ItemTag } from './interfaces/item-tag';
@@ -14,18 +22,18 @@ export class TaskManager implements ItemTagTaskManager {
   private itemService: ItemService;
   private itemMembershipService: ItemMembershipService;
   private itemTagService: ItemTagService;
-  private itemTaskManager: ItemTaskManager
+  private itemTaskManager: ItemTaskManager;
 
   constructor(
     itemService: ItemService,
     itemMembershipService: ItemMembershipService,
     itemTagService: ItemTagService,
-    itemTaskManager: ItemTaskManager
+    itemTaskManager: ItemTaskManager,
   ) {
     this.itemService = itemService;
     this.itemMembershipService = itemMembershipService;
     this.itemTagService = itemTagService;
-    this.itemTaskManager = itemTaskManager
+    this.itemTaskManager = itemTaskManager;
   }
 
   getCreateTaskName(): string {
@@ -91,20 +99,20 @@ export class TaskManager implements ItemTagTaskManager {
       this.itemService,
       this.itemMembershipService,
       this.itemTagService,
-      { item }
+      { item },
     );
   }
 
   createGetOfItemTaskSequence(member: Member, itemId: string): Task<Actor, unknown>[] {
-    const t1 = this.itemTaskManager.createGetTaskSequence(member, itemId)
+    const t1 = this.itemTaskManager.createGetTaskSequence(member, itemId);
     const t2 = new GetItemsItemTagsTask(
       member,
       this.itemService,
       this.itemMembershipService,
       this.itemTagService,
     );
-    t2.getInput = () => ({ item: t1[0].result as Item })
-    return [...t1, t2]
+    t2.getInput = () => ({ item: t1[0].result as Item });
+    return [...t1, t2];
   }
 
   createGetAvailableTagsTask(member: Member): GetAvailableTagsTask {

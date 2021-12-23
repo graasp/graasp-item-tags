@@ -21,27 +21,42 @@ export class GraaspItemTagsError implements GraaspError {
 
 export class ItemNotFound extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR001', statusCode: StatusCodes.NOT_FOUND, message: 'Item not found' }, data);
+    super(
+      { code: 'GITERR001', statusCode: StatusCodes.NOT_FOUND, message: 'Item not found' },
+      data,
+    );
   }
 }
 export class MemberCannotReadItem extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR002', statusCode: StatusCodes.FORBIDDEN, message: 'Member cannot read item' }, data);
+    super(
+      { code: 'GITERR002', statusCode: StatusCodes.FORBIDDEN, message: 'Member cannot read item' },
+      data,
+    );
   }
 }
 export class MemberCannotAdminItem extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR003', statusCode: StatusCodes.FORBIDDEN, message: 'Member cannot admin item' }, data);
+    super(
+      { code: 'GITERR003', statusCode: StatusCodes.FORBIDDEN, message: 'Member cannot admin item' },
+      data,
+    );
   }
 }
 export class ItemHasTag extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR004', statusCode: StatusCodes.BAD_REQUEST, message: 'Item already has tag' }, data);
+    super(
+      { code: 'GITERR004', statusCode: StatusCodes.BAD_REQUEST, message: 'Item already has tag' },
+      data,
+    );
   }
 }
 export class ItemTagNotFound extends GraaspItemTagsError {
   constructor(data?: unknown) {
-    super({ code: 'GITERR005', statusCode: StatusCodes.NOT_FOUND, message: 'Item tag not found' }, data);
+    super(
+      { code: 'GITERR005', statusCode: StatusCodes.NOT_FOUND, message: 'Item tag not found' },
+      data,
+    );
   }
 }
 export class TagNotFound extends GraaspItemTagsError {
