@@ -102,12 +102,6 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.addSchema(common);
 
   // get available tags
-<<<<<<< HEAD
-  fastify.get('/tags', { schema: getTags }, async ({ member, log }) => {
-    const task = taskManager.createGetAvailableTagsTask(member);
-    return runner.runSingle(task, log);
-  });
-=======
   fastify.get(
     '/tags/list', { schema: getTags },
     async ({ member, log }) => {
@@ -115,14 +109,13 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       return runner.runSingle(task, log);
     }
   );
->>>>>>> feat: add get multiple endpoint
 
   // get item tags
   fastify.get<{ Querystring: IdsParams }>(
     '/tags', { schema: getMany },
     async ({ member, query: { id: ids }, log }) => {
-      const tasks = ids.map(id => taskManager.createGetOfItemTask(member, id));
-      return runner.runMultiple(tasks, log);
+      const tasks = ids.map(id => taskManager.createGetOfItemTaskSequence(member, id));
+      return runner.runMultipleSequences(tasks, log);
     }
   );
 
