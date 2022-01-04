@@ -23,7 +23,7 @@ describe('Tags', () => {
     });
   });
 
-  describe('GET /tags', () => {
+  describe('GET /tags/list', () => {
     it('Get tags', async () => {
       const app = await build({
         runner,
@@ -36,7 +36,7 @@ describe('Tags', () => {
       jest.spyOn(runner, 'runSingle').mockImplementation(async () => TAGS);
       const res = await app.inject({
         method: 'GET',
-        url: '/tags',
+        url: `/tags/list`,
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.json()).toEqual(TAGS);
