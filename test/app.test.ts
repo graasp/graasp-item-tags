@@ -36,7 +36,7 @@ describe('Tags', () => {
       jest.spyOn(runner, 'runSingle').mockImplementation(async () => TAGS);
       const res = await app.inject({
         method: 'GET',
-        url: `/tags/list`,
+        url: '/tags/list',
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.json()).toEqual(TAGS);
@@ -74,6 +74,62 @@ describe('Tags', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/invalid-id/tags',
+      });
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    });
+  });
+
+  describe('GET /tags?id=<id>&id<id>', () => {
+    it('Get tags for a single item', async () => {
+      const app = await build({
+        runner,
+        itemDbService,
+        itemMemberhipDbService,
+        itemMembershipTaskManager,
+        itemTaskManager,
+      });
+
+      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ ITEM_TAGS ]);
+      jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
+      const res = await app.inject({
+        method: 'GET',
+        url: `/tags?id=${v4()}`,
+      });
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.json()).toEqual([ ITEM_TAGS ]);
+    });
+
+    it('Get tags for multiple items', async () => {
+      const app = await build({
+        runner,
+        itemDbService,
+        itemMemberhipDbService,
+        itemMembershipTaskManager,
+        itemTaskManager,
+      });
+
+      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ ITEM_TAGS, ITEM_TAGS ]);
+      jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
+      const res = await app.inject({
+        method: 'GET',
+        url: `/tags?id=${v4()}&id=${v4()}`,
+      });
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.json()).toEqual([ ITEM_TAGS, ITEM_TAGS ]);
+    });
+
+    it('Bad request if item id is invalid', async () => {
+      const app = await build({
+        runner,
+        itemDbService,
+        itemMemberhipDbService,
+        itemMembershipTaskManager,
+        itemTaskManager,
+      });
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/tags?id=invalid-id&id=${v4()}`,
       });
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
