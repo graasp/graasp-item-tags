@@ -36,7 +36,7 @@ describe('Tags', () => {
       jest.spyOn(runner, 'runSingle').mockImplementation(async () => TAGS);
       const res = await app.inject({
         method: 'GET',
-        url: `/tags`,
+        url: '/tags',
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.json()).toEqual(TAGS);
@@ -73,7 +73,7 @@ describe('Tags', () => {
 
       const res = await app.inject({
         method: 'GET',
-        url: `/invalid-id/tags`,
+        url: '/invalid-id/tags',
       });
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
@@ -112,7 +112,7 @@ describe('Tags', () => {
 
       const res = await app.inject({
         method: 'POST',
-        url: `/invalid-id/tags`,
+        url: '/invalid-id/tags',
         payload: {
           tagId: 'invalid-id',
         },
