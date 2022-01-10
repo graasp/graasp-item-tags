@@ -3,6 +3,7 @@ import { ItemTaskManager, TaskRunner, ItemMembershipTaskManager } from 'graasp-t
 import MockTask from 'graasp-test/src/tasks/task';
 import { StatusCodes } from 'http-status-codes';
 import { v4 } from 'uuid';
+import qs from 'qs';
 import build from './app';
 import { ITEM_TAGS, TAGS } from './constants';
 
@@ -100,6 +101,9 @@ describe('Tags', () => {
     });
 
     it('Get tags for multiple items', async () => {
+
+      const ids = [ v4(), v4() ];
+
       const app = await build({
         runner,
         itemDbService,
@@ -112,13 +116,15 @@ describe('Tags', () => {
       jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
       const res = await app.inject({
         method: 'GET',
-        url: `/tags?id=${v4()}&id=${v4()}`,
+        url: `/tags?${qs.stringify({ id: ids }, { arrayFormat: 'repeat' })}`,
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.json()).toEqual([ ITEM_TAGS, ITEM_TAGS ]);
     });
 
     it('Bad request if item id is invalid', async () => {
+      const ids = [ 'invalid-id', v4() ];
+
       const app = await build({
         runner,
         itemDbService,
@@ -129,7 +135,7 @@ describe('Tags', () => {
 
       const res = await app.inject({
         method: 'GET',
-        url: `/tags?id=invalid-id&id=${v4()}`,
+        url: `/tags?${qs.stringify({ id: ids }, { arrayFormat: 'repeat' })}`,
       });
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });

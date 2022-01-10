@@ -1,3 +1,5 @@
+const MAX_ITEMS_FOR_GET = 10;
+
 export default {
   $id: 'http://graasp.org/item-tags/',
   definitions: {
@@ -84,7 +86,7 @@ const getMany = {
   querystring: {
     allOf: [
       { $ref: 'http://graasp.org/#/definitions/idsQuery' },
-      { properties: { id: { maxItems: 10 } } }
+      { properties: { id: { maxItems: MAX_ITEMS_FOR_GET } } }
     ]
   },
   response: {
