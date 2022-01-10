@@ -68,16 +68,14 @@ export class TaskManager implements ItemTagTaskManager {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createGetTask(member: Member, objectId: string): BaseItemTagTask<Actor, ItemTag> {
+  createGetTask(_member: Member, _objectId: string): BaseItemTagTask<Actor, ItemTag> {
     throw new Error('Method not implemented.');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createUpdateTask(
-    member: Member,
-    objectId: string,
-    data: Partial<ItemTag>,
+    _member: Member,
+    _objectId: string,
+    _data: Partial<ItemTag>,
   ): BaseItemTagTask<Actor, ItemTag> {
     throw new Error('Method not implemented.');
   }

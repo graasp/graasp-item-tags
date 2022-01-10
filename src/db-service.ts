@@ -1,5 +1,5 @@
 // global
-import { sql, DatabaseTransactionConnectionType as TrxHandler } from 'slonik';
+import { sql, DatabaseTransactionConnection as TrxHandler } from 'slonik';
 // other services
 import { Item } from 'graasp';
 // local
@@ -22,9 +22,9 @@ export class ItemTagService {
       !Array.isArray(c)
         ? sql.identifier([c])
         : sql.join(
-          c.map((cwa) => sql.identifier([cwa])),
-          sql` AS `,
-        ),
+            c.map((cwa) => sql.identifier([cwa])),
+            sql` AS `,
+          ),
     ),
     sql`, `,
   );
@@ -240,9 +240,9 @@ export class ItemTagService {
       !Array.isArray(c)
         ? sql.identifier([c])
         : sql.join(
-          c.map((cwa) => sql.identifier([cwa])),
-          sql` AS `,
-        ),
+            c.map((cwa) => sql.identifier([cwa])),
+            sql` AS `,
+          ),
     ),
     sql`, `,
   );
