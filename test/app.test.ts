@@ -3,6 +3,7 @@ import { ItemTaskManager, TaskRunner, ItemMembershipTaskManager } from 'graasp-t
 import MockTask from 'graasp-test/src/tasks/task';
 import { StatusCodes } from 'http-status-codes';
 import { v4 } from 'uuid';
+import qs from 'qs';
 import build from './app';
 import { ITEM_TAGS, TAGS } from './constants';
 
@@ -23,7 +24,7 @@ describe('Tags', () => {
     });
   });
 
-  describe('GET /tags', () => {
+  describe('GET /tags/list', () => {
     it('Get tags', async () => {
       const app = await build({
         runner,
@@ -36,7 +37,7 @@ describe('Tags', () => {
       jest.spyOn(runner, 'runSingle').mockImplementation(async () => TAGS);
       const res = await app.inject({
         method: 'GET',
-        url: '/tags',
+        url: '/tags/list',
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
       expect(res.json()).toEqual(TAGS);
@@ -74,6 +75,67 @@ describe('Tags', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/invalid-id/tags',
+      });
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    });
+  });
+
+  describe('GET /tags?id=<id>&id<id>', () => {
+    it('Get tags for a single item', async () => {
+      const app = await build({
+        runner,
+        itemDbService,
+        itemMemberhipDbService,
+        itemMembershipTaskManager,
+        itemTaskManager,
+      });
+
+      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ ITEM_TAGS ]);
+      jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
+      const res = await app.inject({
+        method: 'GET',
+        url: `/tags?id=${v4()}`,
+      });
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.json()).toEqual([ ITEM_TAGS ]);
+    });
+
+    it('Get tags for multiple items', async () => {
+
+      const ids = [ v4(), v4() ];
+
+      const app = await build({
+        runner,
+        itemDbService,
+        itemMemberhipDbService,
+        itemMembershipTaskManager,
+        itemTaskManager,
+      });
+
+      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ ITEM_TAGS, ITEM_TAGS ]);
+      jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
+      const res = await app.inject({
+        method: 'GET',
+        url: `/tags?${qs.stringify({ id: ids }, { arrayFormat: 'repeat' })}`,
+      });
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.json()).toEqual([ ITEM_TAGS, ITEM_TAGS ]);
+    });
+
+    it('Bad request if item id is invalid', async () => {
+      const ids = [ 'invalid-id', v4() ];
+
+      const app = await build({
+        runner,
+        itemDbService,
+        itemMemberhipDbService,
+        itemMembershipTaskManager,
+        itemTaskManager,
+      });
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/tags?${qs.stringify({ id: ids }, { arrayFormat: 'repeat' })}`,
       });
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });

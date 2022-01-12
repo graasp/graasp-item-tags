@@ -1,3 +1,5 @@
+const MAX_ITEMS_FOR_GET = 30;
+
 export default {
   $id: 'http://graasp.org/item-tags/',
   definitions: {
@@ -80,6 +82,24 @@ const getItemTags = {
   },
 };
 
+const getMany = {
+  querystring: {
+    allOf: [
+      { $ref: 'http://graasp.org/#/definitions/idsQuery' },
+      { properties: { id: { maxItems: MAX_ITEMS_FOR_GET } } }
+    ]
+  },
+  response: {
+    200: {
+      type: 'array',
+      items: {
+        type: 'array',
+        items: { $ref: 'http://graasp.org/item-tags/#/definitions/itemTag' }
+      }
+    }
+  }
+};
+
 // schema for deleting an item tag
 const deleteOne = {
   params: {
@@ -103,4 +123,10 @@ const getTags = {
   },
 };
 
-export { getItemTags, create, deleteOne, getTags };
+export {
+  getItemTags,
+  create,
+  deleteOne,
+  getTags,
+  getMany,
+};
