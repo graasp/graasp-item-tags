@@ -1,4 +1,4 @@
-const MAX_ITEMS_FOR_GET = 10;
+const MAX_ITEMS_FOR_GET = 30;
 
 export default {
   $id: 'http://graasp.org/item-tags/',
