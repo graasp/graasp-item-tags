@@ -299,4 +299,22 @@ export class ItemTagService {
       )
       .then(({ rows }) => rows);
   }
+
+  /**
+   * Delete item-tags of given item
+   * @param itemPath item_path of given item
+   * @param tagIds a list of tags need to be deleted
+   * @param transactionHandler Database transaction handler
+   */
+  async deleteItemTagsByItemId(itemPath: string, tagIds: string[], transactionHandler: TrxHandler): Promise<number> {
+    return transactionHandler
+      .query<ItemTag>(
+        sql`
+        DELETE FROM item_tag
+        WHERE item_path = ${itemPath} AND tag_id IN (${sql.join(tagIds, sql`, `)})
+        RETURNING *
+      `,
+      )
+      .then(({ rows }) => rows.length);
+  }
 }
