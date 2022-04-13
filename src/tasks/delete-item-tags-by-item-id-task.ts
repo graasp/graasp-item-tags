@@ -1,6 +1,5 @@
 // global
 import { DatabaseTransactionHandler, ItemMembershipService, ItemService, Member } from 'graasp';
-import { TAGS } from '../constants';
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
 
@@ -10,24 +9,25 @@ export class DeleteItemTagsByItemIdTask extends BaseItemTagTask<Member, number> 
   }
 
   private itemId: string;
+  private tagIds: string[];
 
   constructor(
     member: Member,
     itemId: string,
+    tagIds: string[],
     itemService: ItemService,
     itemMembershipService: ItemMembershipService,
     itemTagService: ItemTagService,
   ) {
     super(member, itemTagService, itemService, itemMembershipService);
     this.itemId = itemId;
+    this.tagIds = tagIds;
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
     this.status = 'RUNNING';
     const itemPath = this.itemId.replace(/-/g, '_');
-    const tags = (await this.itemTagService.getAllTags(handler))?.filter((tag) => tag?.name === TAGS.PUBLIC || tag?.name === TAGS.PUBLISHED);
-    const tagIds = tags?.map((tag) => tag?.id);
-    this._result = await this.itemTagService.deleteItemTagsByItemId(itemPath, tagIds, handler);
+    this._result = await this.itemTagService.deleteItemTagsByItemId(itemPath, this.tagIds, handler);
     this.status = 'OK';
   }
 }

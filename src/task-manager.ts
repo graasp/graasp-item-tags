@@ -126,10 +126,11 @@ export class TaskManager implements ItemTagTaskManager {
     );
   }
 
-  createDeleteItemTagsByItemIdTask(member: Member, itemId: string): DeleteItemTagsByItemIdTask {
+  createDeleteItemTagsByItemIdTask(member: Member, itemId: string, tagIds: string[]): DeleteItemTagsByItemIdTask {
     return new DeleteItemTagsByItemIdTask(
       member,
       itemId,
+      tagIds,
       this.itemService,
       this.itemMembershipService,
       this.itemTagService,
