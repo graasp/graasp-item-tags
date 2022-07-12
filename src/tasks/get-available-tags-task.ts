@@ -1,7 +1,13 @@
 // global
-import { DatabaseTransactionHandler, ItemMembershipService, ItemService } from 'graasp';
+import {
+  DatabaseTransactionHandler,
+  ItemMembershipService,
+  ItemService,
+  TaskStatus,
+} from '@graasp/sdk';
 // other services
-import { Actor } from 'graasp';
+import { Actor } from '@graasp/sdk';
+
 // local
 import { ItemTagService } from '../db-service';
 import { Tag } from '../interfaces/tag';
@@ -22,12 +28,12 @@ export class GetAvailableTagsTask extends BaseItemTagTask<Actor, readonly Tag[]>
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     // get available tags
     const tags = await this.itemTagService.getAllTags(handler);
 
     this._result = tags;
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

@@ -1,7 +1,8 @@
 // global
-import { Actor, DatabaseTransactionHandler, Item } from 'graasp';
+import { Actor, DatabaseTransactionHandler, Item, TaskStatus } from '@graasp/sdk';
 // other services
-import { ItemService, ItemMembershipService } from 'graasp';
+import { ItemMembershipService, ItemService } from '@graasp/sdk';
+
 // local
 import { ItemTagService } from '../db-service';
 import { ItemTag } from '../interfaces/item-tag';
@@ -31,7 +32,7 @@ export class GetItemsItemTagsTask extends BaseItemTagTask<Actor, ItemTag[]> {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { item } = this.input;
     this.targetId = item?.id;
@@ -41,6 +42,6 @@ export class GetItemsItemTagsTask extends BaseItemTagTask<Actor, ItemTag[]> {
 
     // return item tags
     this._result = itemTags;
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

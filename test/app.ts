@@ -1,8 +1,10 @@
 import fastify from 'fastify';
-import plugin from '../src/service-api';
-import { ItemMembershipService, ItemService } from 'graasp';
-import { TaskRunner, ItemTaskManager, ItemMembershipTaskManager } from 'graasp-test';
+
+import { ItemMembershipService, ItemService } from '@graasp/sdk';
+import { ItemMembershipTaskManager, ItemTaskManager, TaskRunner } from 'graasp-test';
+
 import schemas from '../src/schemas/common';
+import plugin from '../src/service-api';
 
 type props = {
   runner: TaskRunner;

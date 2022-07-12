@@ -1,4 +1,4 @@
-import { Item } from 'graasp';
+import { Item } from '@graasp/sdk';
 
 export interface ItemTagCreateHookHandlerExtraData {
   target: Item;

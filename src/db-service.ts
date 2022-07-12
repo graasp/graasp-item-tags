@@ -1,8 +1,7 @@
-// global
-import { sql, DatabaseTransactionConnection as TrxHandler } from 'slonik';
-// other services
-import { Item } from 'graasp';
-// local
+import { DatabaseTransactionConnection as TrxHandler, sql } from 'slonik';
+
+import { Item } from '@graasp/sdk';
+
 import { ItemTag } from './interfaces/item-tag';
 import { Tag } from './interfaces/tag';
 
@@ -306,7 +305,11 @@ export class ItemTagService {
    * @param tagIds a list of tags need to be deleted
    * @param transactionHandler Database transaction handler
    */
-  async deleteItemTagsByItemId(itemPath: string, tagIds: string[], transactionHandler: TrxHandler): Promise<number> {
+  async deleteItemTagsByItemId(
+    itemPath: string,
+    tagIds: string[],
+    transactionHandler: TrxHandler,
+  ): Promise<number> {
     return transactionHandler
       .query<ItemTag>(
         sql`

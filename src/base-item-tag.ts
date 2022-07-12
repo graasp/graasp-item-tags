@@ -1,4 +1,3 @@
-// local
 import { ItemTag } from './interfaces/item-tag';
 
 export class BaseItemTag implements ItemTag {
