@@ -3,8 +3,12 @@ import qs from 'qs';
 import { v4 } from 'uuid';
 
 import { ItemMembershipService, ItemService } from '@graasp/sdk';
-import { ItemMembershipTaskManager, ItemTaskManager, TaskRunner } from 'graasp-test';
-import MockTask from 'graasp-test/src/tasks/task';
+import {
+  ItemMembershipTaskManager,
+  ItemTaskManager,
+  Task as MockTask,
+  TaskRunner,
+} from 'graasp-test';
 
 import build from './app';
 import { ITEM_TAGS, TAGS } from './constants';

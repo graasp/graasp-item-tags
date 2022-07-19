@@ -1,11 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { BaseGraaspError } from '@graasp/sdk';
+import { ErrorFactory } from '@graasp/sdk';
 
 import { PLUGIN_NAME } from './constants';
 
-export class ItemNotFound extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export const GraaspError = ErrorFactory(PLUGIN_NAME);
+
+export class ItemNotFound extends GraaspError {
   constructor(data?: unknown) {
     super(
       { code: 'GITERR001', statusCode: StatusCodes.NOT_FOUND, message: 'Item not found' },
@@ -13,8 +14,7 @@ export class ItemNotFound extends BaseGraaspError {
     );
   }
 }
-export class MemberCannotReadItem extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export class MemberCannotReadItem extends GraaspError {
   constructor(data?: unknown) {
     super(
       { code: 'GITERR002', statusCode: StatusCodes.FORBIDDEN, message: 'Member cannot read item' },
@@ -22,8 +22,7 @@ export class MemberCannotReadItem extends BaseGraaspError {
     );
   }
 }
-export class MemberCannotAdminItem extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export class MemberCannotAdminItem extends GraaspError {
   constructor(data?: unknown) {
     super(
       { code: 'GITERR003', statusCode: StatusCodes.FORBIDDEN, message: 'Member cannot admin item' },
@@ -31,8 +30,7 @@ export class MemberCannotAdminItem extends BaseGraaspError {
     );
   }
 }
-export class ItemHasTag extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export class ItemHasTag extends GraaspError {
   constructor(data?: unknown) {
     super(
       { code: 'GITERR004', statusCode: StatusCodes.BAD_REQUEST, message: 'Item already has tag' },
@@ -40,8 +38,7 @@ export class ItemHasTag extends BaseGraaspError {
     );
   }
 }
-export class ItemTagNotFound extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export class ItemTagNotFound extends GraaspError {
   constructor(data?: unknown) {
     super(
       { code: 'GITERR005', statusCode: StatusCodes.NOT_FOUND, message: 'Item tag not found' },
@@ -49,14 +46,12 @@ export class ItemTagNotFound extends BaseGraaspError {
     );
   }
 }
-export class TagNotFound extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export class TagNotFound extends GraaspError {
   constructor(data?: unknown) {
     super({ code: 'GITERR006', statusCode: StatusCodes.NOT_FOUND, message: 'Tag not found' }, data);
   }
 }
-export class ConflictingTagsInTheHierarchy extends BaseGraaspError {
-  origin = PLUGIN_NAME;
+export class ConflictingTagsInTheHierarchy extends GraaspError {
   constructor(data?: unknown) {
     super(
       {
