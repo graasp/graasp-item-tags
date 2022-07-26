@@ -1,5 +1,10 @@
-import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
-import { ItemMembershipService, ItemService } from '@graasp/sdk';
+import {
+  Actor,
+  DatabaseTransactionHandler,
+  ItemMembershipService,
+  ItemService,
+  TaskStatus,
+} from '@graasp/sdk';
 
 import { ItemTagService } from '../db-service';
 import { ItemTag } from '../interfaces/item-tag';
