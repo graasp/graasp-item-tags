@@ -1,21 +1,23 @@
 // global
 import { FastifyLoggerInstance } from 'fastify';
-import { Actor, DatabaseTransactionHandler, PreHookHandlerType } from 'graasp';
+
+import { Actor, DatabaseTransactionHandler, PreHookHandlerType, TaskStatus } from '@graasp/sdk';
 // other services
-import { ItemService, ItemMembershipService } from 'graasp';
+import { ItemMembershipService, ItemService } from '@graasp/sdk';
+
+import { BaseItemTag } from '../base-item-tag';
+import { ItemTagService } from '../db-service';
+import { ItemTag } from '../interfaces/item-tag';
+import { ItemTagCreateHookHandlerExtraData } from '../interfaces/item-tag-task';
 // local
 import {
+  ConflictingTagsInTheHierarchy,
+  ItemHasTag,
   ItemNotFound,
   MemberCannotAdminItem,
-  ItemHasTag,
   TagNotFound,
-  ConflictingTagsInTheHierarchy,
 } from '../util/graasp-item-tags-error';
-import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
-import { BaseItemTag } from '../base-item-tag';
-import { ItemTagCreateHookHandlerExtraData } from '../interfaces/item-tag-task';
-import { ItemTag } from '../interfaces/item-tag';
 
 export class CreateItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
   get name(): string {
@@ -37,7 +39,7 @@ export class CreateItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     // get item that the new tag will target
     const item = await this.itemService.get(this.targetId, handler);
@@ -73,6 +75,6 @@ export class CreateItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
     // create tag
     this.preHookHandler?.(itemTag, this.actor, { log }, { target: item });
     this._result = await this.itemTagService.create(itemTag, handler);
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

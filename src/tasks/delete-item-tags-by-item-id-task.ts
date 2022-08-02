@@ -1,5 +1,11 @@
-// global
-import { DatabaseTransactionHandler, ItemMembershipService, ItemService, Member } from 'graasp';
+import {
+  DatabaseTransactionHandler,
+  ItemMembershipService,
+  ItemService,
+  Member,
+  TaskStatus,
+} from '@graasp/sdk';
+
 import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
 
@@ -25,9 +31,9 @@ export class DeleteItemTagsByItemIdTask extends BaseItemTagTask<Member, number> 
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
     const itemPath = this.itemId.replace(/-/g, '_');
     this._result = await this.itemTagService.deleteItemTagsByItemId(itemPath, this.tagIds, handler);
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

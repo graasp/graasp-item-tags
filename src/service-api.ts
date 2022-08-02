@@ -1,24 +1,20 @@
-// global
 import { FastifyPluginAsync } from 'fastify';
 
 import {
-  IdParam, Item, IdsParams, ItemCopyHookHandlerExtraData,
+  IdParam,
+  IdsParams,
+  Item,
+  ItemCopyHookHandlerExtraData,
   ItemMoveHookHandlerExtraData,
   PostHookHandlerType,
   PreHookHandlerType,
-} from 'graasp';
-// local
-import common, {
-  getItemTags,
-  create,
-  deleteOne,
-  getTags,
-  getMany
-} from './schemas/schemas';
+} from '@graasp/sdk';
+
 import { ItemTagService } from './db-service';
 import { ItemTag } from './interfaces/item-tag';
-import { ConflictingTagsInTheHierarchy } from './util/graasp-item-tags-error';
+import common, { create, deleteOne, getItemTags, getMany, getTags } from './schemas/schemas';
 import { TaskManager } from './task-manager';
+import { ConflictingTagsInTheHierarchy } from './util/graasp-item-tags-error';
 
 const plugin: FastifyPluginAsync = async (fastify) => {
   const {
@@ -102,21 +98,19 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.addSchema(common);
 
   // get available tags
-  fastify.get(
-    '/tags/list', { schema: getTags },
-    async ({ member, log }) => {
-      const task = taskManager.createGetAvailableTagsTask(member);
-      return runner.runSingle(task, log);
-    }
-  );
+  fastify.get('/tags/list', { schema: getTags }, async ({ member, log }) => {
+    const task = taskManager.createGetAvailableTagsTask(member);
+    return runner.runSingle(task, log);
+  });
 
   // get item tags
   fastify.get<{ Querystring: IdsParams }>(
-    '/tags', { schema: getMany },
+    '/tags',
+    { schema: getMany },
     async ({ member, query: { id: ids }, log }) => {
-      const tasks = ids.map(id => taskManager.createGetOfItemTaskSequence(member, id));
+      const tasks = ids.map((id) => taskManager.createGetOfItemTaskSequence(member, id));
       return runner.runMultipleSequences(tasks, log);
-    }
+    },
   );
 
   // get item tags

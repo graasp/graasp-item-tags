@@ -1,23 +1,10 @@
-import { GraaspErrorDetails, GraaspError } from 'graasp';
 import { StatusCodes } from 'http-status-codes';
 
-export class GraaspItemTagsError implements GraaspError {
-  name: string;
-  code: string;
-  message: string;
-  statusCode?: number;
-  data?: unknown;
-  origin: 'core' | 'plugin';
+import { ErrorFactory } from '@graasp/sdk';
 
-  constructor({ code, statusCode, message }: GraaspErrorDetails, data?: unknown) {
-    this.name = code;
-    this.code = code;
-    this.message = message;
-    this.statusCode = statusCode;
-    this.data = data;
-    this.origin = 'plugin';
-  }
-}
+import { PLUGIN_NAME } from './constants';
+
+export const GraaspItemTagsError = ErrorFactory(PLUGIN_NAME);
 
 export class ItemNotFound extends GraaspItemTagsError {
   constructor(data?: unknown) {

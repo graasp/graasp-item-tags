@@ -1,16 +1,19 @@
-// global
-import { Actor, DatabaseTransactionHandler } from 'graasp';
-// other services
-import { ItemService, ItemMembershipService } from 'graasp';
-// local
+import {
+  Actor,
+  DatabaseTransactionHandler,
+  ItemMembershipService,
+  ItemService,
+  TaskStatus,
+} from '@graasp/sdk';
+
+import { ItemTagService } from '../db-service';
+import { ItemTag } from '../interfaces/item-tag';
 import {
   ItemNotFound,
-  MemberCannotAdminItem,
   ItemTagNotFound,
+  MemberCannotAdminItem,
 } from '../util/graasp-item-tags-error';
-import { ItemTagService } from '../db-service';
 import { BaseItemTagTask } from './base-item-tag-task';
-import { ItemTag } from '../interfaces/item-tag';
 
 export class DeleteItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
   get name(): string {
@@ -33,7 +36,7 @@ export class DeleteItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     // get item in this tag+item (ItemTag)
     const item = await this.itemService.get(this.itemId, handler);
@@ -48,7 +51,7 @@ export class DeleteItemTagTask extends BaseItemTagTask<Actor, ItemTag> {
     if (!itemTag) throw new ItemTagNotFound(this.targetId);
 
     // return item tags
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
     this._result = itemTag;
   }
 }

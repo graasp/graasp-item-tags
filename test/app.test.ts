@@ -1,9 +1,15 @@
-import { ItemMembershipService, ItemService } from 'graasp';
-import { ItemTaskManager, TaskRunner, ItemMembershipTaskManager } from 'graasp-test';
-import MockTask from 'graasp-test/src/tasks/task';
 import { StatusCodes } from 'http-status-codes';
-import { v4 } from 'uuid';
 import qs from 'qs';
+import { v4 } from 'uuid';
+
+import { ItemMembershipService, ItemService } from '@graasp/sdk';
+import {
+  ItemMembershipTaskManager,
+  ItemTaskManager,
+  Task as MockTask,
+  TaskRunner,
+} from 'graasp-test';
+
 import build from './app';
 import { ITEM_TAGS, TAGS } from './constants';
 
@@ -90,19 +96,18 @@ describe('Tags', () => {
         itemTaskManager,
       });
 
-      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ ITEM_TAGS ]);
+      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ITEM_TAGS]);
       jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
       const res = await app.inject({
         method: 'GET',
         url: `/tags?id=${v4()}`,
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(res.json()).toEqual([ ITEM_TAGS ]);
+      expect(res.json()).toEqual([ITEM_TAGS]);
     });
 
     it('Get tags for multiple items', async () => {
-
-      const ids = [ v4(), v4() ];
+      const ids = [v4(), v4()];
 
       const app = await build({
         runner,
@@ -112,18 +117,20 @@ describe('Tags', () => {
         itemTaskManager,
       });
 
-      jest.spyOn(runner, 'runMultipleSequences').mockImplementation(async () => [ ITEM_TAGS, ITEM_TAGS ]);
+      jest
+        .spyOn(runner, 'runMultipleSequences')
+        .mockImplementation(async () => [ITEM_TAGS, ITEM_TAGS]);
       jest.spyOn(itemTaskManager, 'createGetTaskSequence').mockReturnValue([new MockTask()]);
       const res = await app.inject({
         method: 'GET',
         url: `/tags?${qs.stringify({ id: ids }, { arrayFormat: 'repeat' })}`,
       });
       expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(res.json()).toEqual([ ITEM_TAGS, ITEM_TAGS ]);
+      expect(res.json()).toEqual([ITEM_TAGS, ITEM_TAGS]);
     });
 
     it('Bad request if item id is invalid', async () => {
-      const ids = [ 'invalid-id', v4() ];
+      const ids = ['invalid-id', v4()];
 
       const app = await build({
         runner,

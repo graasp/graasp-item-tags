@@ -1,23 +1,22 @@
-// other services
 import {
-  Member,
-  ItemService,
-  ItemMembershipService,
   Actor,
-  Task,
   Item,
+  ItemMembershipService,
+  ItemService,
   ItemTaskManager,
-} from 'graasp';
-// local
+  Member,
+  Task,
+} from '@graasp/sdk';
+
 import { ItemTagService } from './db-service';
 import { ItemTag } from './interfaces/item-tag';
+import { ItemTagTaskManager } from './interfaces/item-tag-task-manager';
+import { BaseItemTagTask } from './tasks/base-item-tag-task';
 import { CreateItemTagTask } from './tasks/create-item-tag-task';
 import { DeleteItemTagTask } from './tasks/delete-item-tag-task';
-import { BaseItemTagTask } from './tasks/base-item-tag-task';
-import { GetItemsItemTagsTask } from './tasks/get-items-item-tags-task';
-import { ItemTagTaskManager } from './interfaces/item-tag-task-manager';
-import { GetAvailableTagsTask } from './tasks/get-available-tags-task';
 import { DeleteItemTagsByItemIdTask } from './tasks/delete-item-tags-by-item-id-task';
+import { GetAvailableTagsTask } from './tasks/get-available-tags-task';
+import { GetItemsItemTagsTask } from './tasks/get-items-item-tags-task';
 
 export class TaskManager implements ItemTagTaskManager {
   private itemService: ItemService;
@@ -126,7 +125,11 @@ export class TaskManager implements ItemTagTaskManager {
     );
   }
 
-  createDeleteItemTagsByItemIdTask(member: Member, itemId: string, tagIds: string[]): DeleteItemTagsByItemIdTask {
+  createDeleteItemTagsByItemIdTask(
+    member: Member,
+    itemId: string,
+    tagIds: string[],
+  ): DeleteItemTagsByItemIdTask {
     return new DeleteItemTagsByItemIdTask(
       member,
       itemId,

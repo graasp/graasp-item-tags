@@ -1,5 +1,5 @@
-// global
 import { FastifyLoggerInstance } from 'fastify';
+
 import {
   Actor,
   DatabaseTransactionHandler,
@@ -10,7 +10,8 @@ import {
   PreHookHandlerType,
   Task,
   TaskStatus,
-} from 'graasp';
+} from '@graasp/sdk';
+
 import { ItemTagService } from '..';
 
 export abstract class BaseItemTagTask<A extends Actor, R> implements Task<A, R> {
@@ -40,7 +41,7 @@ export abstract class BaseItemTagTask<A extends Actor, R> implements Task<A, R> 
     itemMembershipService: ItemMembershipService,
   ) {
     this.actor = actor;
-    this.status = 'NEW';
+    this.status = TaskStatus.NEW;
     this.itemService = itemService;
     this.itemTagService = itemTagService;
     this.itemMembershipService = itemMembershipService;
